@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical"
+    android:textAlignment="center">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="165dp"
+        android:contentDescription="@string/logo"
+        android:padding="20dp"
+        android:src="@drawable/logo_salmon" />
+
+    <Button
+        android:id="@+id/play_game_button"
+        android:layout_width="255dp"
+        android:layout_height="85dp"
+        android:layout_gravity="center"
+        android:layout_margin="35dp"
+        android:backgroundTint="@color/salmon_orange"
+        android:fontFamily="@font/mangatb"
+        android:text="@string/play_game"
+        android:textColor="@color/black"
+        android:textSize="20dp" />
+
+    <Button
+        android:id="@+id/load_game_button"
+        android:layout_width="255dp"
+        android:layout_height="85dp"
+        android:layout_gravity="center"
+        android:layout_margin="35dp"
+        android:backgroundTint="@color/salmon_orange"
+        android:fontFamily="@font/mangatb"
+        android:text="@string/load_game"
+        android:textColor="@color/black"
+        android:textSize="20dp" />
+
+    <Button
+        android:id="@+id/custom_button"
+        android:layout_width="255dp"
+        android:layout_height="85dp"
+        android:layout_gravity="center"
+        android:layout_margin="35dp"
+        android:backgroundTint="@color/salmon_orange"
+        android:fontFamily="@font/mangatb"
+        android:text="@string/customize"
+        android:textColor="@color/black"
+        android:textSize="20dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingLeft="35dp"
+            android:scaleX="2"
+            android:scaleY="2" />
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:paddingLeft="3dp"
+            android:src="@drawable/ic_launcher_foreground" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="59dp"
+            android:fontFamily="@font/mangatb"
+            android:layout_marginTop="35dp"
+            android:text="@string/highscore"
+            android:textSize="20dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

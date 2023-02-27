@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Salmon</string>
+    <string name="logo">logo salmon</string>
+    <string name="play_game">Play Game</string>
+    <string name="load_game">Load Game</string>
+    <string name="customize">My Salmon</string>
+    <string name="highscore">HighScore : x pts</string>
+    <string name="actual_score">Score : x pts</string>
+    <string name="vies">Vies : x</string>
+    <string name="niveau">Niveau : x</string>
+</resources>

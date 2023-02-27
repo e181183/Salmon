@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/background">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:fontFamily="@font/mangatb"
+        android:padding="24dp"
+        android:text="GameOver"
+        android:textSize="50dp"
+        android:textColor="#000000"/>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:fontFamily="@font/mangatb"
+        android:padding="24dp"
+        android:text="Level X"
+        android:textSize="25dp"
+        android:textColor="#000000"/>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:fontFamily="@font/mangatb"
+        android:padding="24dp"
+        android:text="Score : X"
+        android:textSize="25dp"
+        android:textColor="#000000"/>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="24dp"
+        android:fontFamily="@font/mangatb"
+        android:text="HighScore : X"
+        android:textSize="20dp"
+        android:textColor="#000000"/>
+
+    <Button
+        android:id="@+id/GameOverButton"
+        android:layout_width="260dp"
+        android:layout_height="97dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="200dp"
+        android:backgroundTint="#EC7122"
+        android:textColor="#000000"
+        android:fontFamily="@font/mangatb"
+        android:textSize="20dp"
+        android:text="back to menu" />
+
+</LinearLayout>
