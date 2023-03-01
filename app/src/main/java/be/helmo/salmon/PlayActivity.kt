@@ -9,7 +9,7 @@ class PlayActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_play)
+        //setContentView(R.layout.activity_play)
         binding = ActivityPlayBinding.inflate(layoutInflater)
         setContentView(binding.root)
     }
