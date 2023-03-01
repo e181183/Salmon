@@ -2,6 +2,7 @@ package be.helmo.salmon
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import be.helmo.salmon.databinding.ActivityCustomBinding
@@ -59,7 +60,5 @@ class CustomActivity : AppCompatActivity() {
         binding.soundForYellow.setOnClickListener { view: View ->
             Toast.makeText(this, "yellow sound", Toast.LENGTH_SHORT).show()
         }
-
-
     }
 }
