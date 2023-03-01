@@ -12,8 +12,8 @@
         android:gravity="center"
         android:fontFamily="@font/mangatb"
         android:padding="24dp"
-        android:text="GameOver"
-        android:textSize="50dp"
+        android:text="@string/GameOver"
+        android:textSize="50sp"
         android:textColor="#000000"/>
 
     <TextView
@@ -23,8 +23,8 @@
         android:gravity="center"
         android:fontFamily="@font/mangatb"
         android:padding="24dp"
-        android:text="Level X"
-        android:textSize="25dp"
+        android:text="@string/niveau"
+        android:textSize="25sp"
         android:textColor="#000000"/>
 
     <TextView
@@ -34,8 +34,8 @@
         android:gravity="center"
         android:fontFamily="@font/mangatb"
         android:padding="24dp"
-        android:text="Score : X"
-        android:textSize="25dp"
+        android:text="@string/actual_score"
+        android:textSize="25sp"
         android:textColor="#000000"/>
 
     <TextView
@@ -45,8 +45,8 @@
         android:gravity="center"
         android:padding="24dp"
         android:fontFamily="@font/mangatb"
-        android:text="HighScore : X"
-        android:textSize="20dp"
+        android:text="@string/highscore"
+        android:textSize="20sp"
         android:textColor="#000000"/>
 
     <Button
@@ -58,7 +58,7 @@
         android:backgroundTint="#EC7122"
         android:textColor="#000000"
         android:fontFamily="@font/mangatb"
-        android:textSize="20dp"
-        android:text="back to menu" />
+        android:textSize="20sp"
+        android:text="@string/BackToMenu" />
 
 </LinearLayout>
