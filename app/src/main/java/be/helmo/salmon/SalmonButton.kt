@@ -7,7 +7,7 @@ import java.util.*
 @Entity
 data class SalmonButton(
     @PrimaryKey
-    val id : UUID,
+    val id : Int,
     val image : Int,
-    val Sound : Int
+    val sound : Int
 )

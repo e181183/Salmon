@@ -7,7 +7,7 @@ import java.util.*
 @Entity
 data class Game(
     @PrimaryKey
-    val id : UUID,
+    val id : Int,
     val level: Int,
     val score: Int,
     val sequence: List<Int>
