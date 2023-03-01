@@ -4,18 +4,16 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import be.helmo.salmon.SalmonButton
 import be.helmo.salmon.database.dao.SalmonButtonDao
 
 @Database(entities = [ SalmonButton::class ], version=1)
-@TypeConverters(SalmonButtonTypeConverters::class)
 abstract class SalmonButtonDatabase : RoomDatabase() {
     abstract fun SalmonButtonDao(): SalmonButtonDao
 
     companion object {
         private const val DATABASE_NAME = "salmon_button_database"
-        @Volatile
+        //@Volatile
         private var instance: SalmonButtonDatabase? = null
 
         fun initDatabase(context: Context){
@@ -31,6 +29,10 @@ abstract class SalmonButtonDatabase : RoomDatabase() {
         fun getInstance(): SalmonButtonDatabase? {
             checkNotNull(instance) { "Game database must be initialized" }
             return instance
+        }
+
+        fun disconnectDatabase(){
+            instance = null
         }
     }
 }

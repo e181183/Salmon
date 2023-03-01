@@ -1,8 +1,7 @@
 package be.helmo.salmon.database.dao
 
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.lifecycle.LiveData
+import androidx.room.*
 import be.helmo.salmon.Game
 import java.util.*
 
@@ -11,13 +10,9 @@ interface GameDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addSavedGame(game: Game)
 
-    @Query("""UPDATE game 
-        SET level = (:level),
-        score = (:score),
-        sequence = (:sequence)
-        WHERE id = (:id)""")
-    fun replaceSavedGame(id: Int): Game
+    @Delete
+    fun deleteSavedGame(game: Game)
 
     @Query("SELECT * FROM game WHERE id = (:id)")
-    fun getGame(id: Int): Game
+    fun getGame(id: Int): LiveData<Game>
 }
