@@ -8,4 +8,26 @@
     <string name="actual_score">Score : x pts</string>
     <string name="vies">Vies : x</string>
     <string name="niveau">Niveau : x</string>
+    <string name="menu">Menu</string>
+    <string name="resetButtons">Reset Simon</string>
+    <string name="SalmonSoundButtonRed">Salmon Sound Button Red</string>
+    <string name="ChangeImageRed">Change Image Red</string>
+    <string name="ChangeSoundRed">Change Sound Red</string>
+    <string name="SalmonSoundButtonBlue">Salmon Sound Button Blue</string>
+    <string name="ChangeImageBlue">Change Image Blue</string>
+    <string name="ChangeSoundBlue">Change Sound Blue</string>
+    <string name="SalmonSoundButtonGreen">Salmon Sound Button Green</string>
+    <string name="ChangeImageGreen">Change Image Green</string>
+    <string name="ChangeSoundGreen">Change Sound Green</string>
+    <string name="SalmonSoundButtonYellow">Salmon Sound Button Yellow</string>
+    <string name="ChangeImageYellow">Change Image Yellow</string>
+    <string name="ChangeSoundYellow">Change Sound Yellow</string>
+    <string name="GameOver">Game Over</string>
+    <string name="BackToMenu">Back To Menu</string>
+    <string name="SalmonGameButtonRed">Salmon Game Button Red</string>
+    <string name="SalmonGameButtonGreen">Salmon Game Button Green</string>
+    <string name="SalmonGameButtonBlue">Salmon Game Button Blue</string>
+    <string name="SalmonGameButtonYellow">Salmon Game Button Yellow</string>
+    <string name="mute_icon">Mute Icon</string>
+
 </resources>
