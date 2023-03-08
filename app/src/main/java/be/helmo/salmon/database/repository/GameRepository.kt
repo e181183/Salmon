@@ -1,7 +1,7 @@
 package be.helmo.salmon.database.repository
 
 import androidx.lifecycle.LiveData
-import be.helmo.salmon.Game
+import be.helmo.salmon.model.Game
 import be.helmo.salmon.database.GameDatabase
 import be.helmo.salmon.database.dao.GameDao
 

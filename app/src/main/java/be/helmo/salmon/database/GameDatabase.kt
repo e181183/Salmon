@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room.databaseBuilder
 import androidx.room.RoomDatabase
-import be.helmo.salmon.Game
+import be.helmo.salmon.model.Game
 import be.helmo.salmon.database.dao.GameDao
 
 @Database(entities = [ Game::class ], version=1)

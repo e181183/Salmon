@@ -1,27 +1,32 @@
 package be.helmo.salmon.database.repository
 
+import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
-import be.helmo.salmon.SalmonButton
+import be.helmo.salmon.model.SalmonButton
 import be.helmo.salmon.database.SalmonButtonDatabase
 import be.helmo.salmon.database.dao.SalmonButtonDao
 
-class SalmonButtonRepository{
+class SalmonButtonRepository(private val salmonButtonDao : SalmonButtonDao) {
 
-    private val salmonButtonDao : SalmonButtonDao = SalmonButtonDatabase.getInstance()!!.SalmonButtonDao()
+    //private val salmonButtonDao : SalmonButtonDao = SalmonButtonDatabase.getInstance()!!.SalmonButtonDao()
 
-    fun addButton(salmonButton : SalmonButton) {
+    suspend fun addButton(salmonButton : SalmonButton) {
         salmonButtonDao.addButton(salmonButton)
     }
 
-    fun resetButtons() {
+    /*suspend fun resetButtons() {
         salmonButtonDao.resetButtons()
+    }*/
+
+    fun getButton(id : Int) : LiveData<SalmonButton> {
+        return salmonButtonDao.getButton(id)
     }
 
-    fun getButton() : LiveData<SalmonButton> {
-        return salmonButtonDao.getButton(1)
+    fun getButtonImage(id : Int) : Bitmap {
+        return salmonButtonDao.getButtonImage(id)
     }
 
-    companion object {
+    /*companion object {
         private var instance : SalmonButtonRepository? = null
         fun getInstance(): SalmonButtonRepository? {
             if (instance == null) {
@@ -29,5 +34,5 @@ class SalmonButtonRepository{
             }
             return instance
         }
-    }
+    }*/
 }

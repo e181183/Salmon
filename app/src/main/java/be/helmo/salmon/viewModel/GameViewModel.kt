@@ -2,7 +2,7 @@ package be.helmo.salmon.viewModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import be.helmo.salmon.Game
+import be.helmo.salmon.model.Game
 import be.helmo.salmon.database.repository.GameRepository
 
 class GameViewModel : ViewModel()  {
