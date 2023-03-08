@@ -1,4 +1,4 @@
-package be.helmo.salmon
+package be.helmo.salmon.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -10,5 +10,5 @@ data class Game(
     val id : Int,
     val level: Int,
     val score: Int,
-    val sequence: List<Int>
+    val sequence: String
 )

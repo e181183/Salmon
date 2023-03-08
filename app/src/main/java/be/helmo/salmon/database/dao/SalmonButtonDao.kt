@@ -1,18 +1,22 @@
 package be.helmo.salmon.database.dao
 
+import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import be.helmo.salmon.SalmonButton
+import be.helmo.salmon.model.SalmonButton
 import java.util.*
-
+@Dao
 interface SalmonButtonDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addButton(salmonButton: SalmonButton)
+    suspend fun addButton(salmonButton: SalmonButton)
 
-    @Query("DELETE * FROM salmonButton")
-    fun resetButtons()
+    /*@Query("DELETE * FROM salmonButton")
+    suspend fun resetButtons()*/
 
     @Query("SELECT * FROM salmonButton WHERE id = (:id)")
     fun getButton(id: Int): LiveData<SalmonButton>
+
+    @Query("SELECT image FROM salmonButton WHERE id = (:id)")
+    fun getButtonImage(id: Int): Bitmap
 }

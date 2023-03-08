@@ -2,9 +2,10 @@ package be.helmo.salmon.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import be.helmo.salmon.Game
+import be.helmo.salmon.model.Game
 import java.util.*
 
+@Dao
 interface GameDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
