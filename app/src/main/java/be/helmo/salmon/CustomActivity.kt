@@ -3,11 +3,11 @@ package be.helmo.salmon
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
@@ -19,6 +19,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import be.helmo.salmon.databinding.ActivityCustomBinding
 import be.helmo.salmon.viewModel.SalmonButtonViewModel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class CustomActivity : AppCompatActivity() {
 
@@ -29,21 +31,25 @@ class CustomActivity : AppCompatActivity() {
 
     private lateinit var buttonViewmodel : SalmonButtonViewModel
 
+    private var micro : Micro = Micro(this)
+
     companion object {
         const val REQUEST_IMAGE_CAPTURE = 88
         const val REQUEST_IMAGE_PICK = 99
-        var companionButtonId: Int = 0
-
         private const val REQUEST_CODE_PERMISSIONS = 10
-        private val REQUIRED_PERMISSIONS =
+
+        private val REQUIRED_ALL_PERMISSIONS =
+            mutableListOf(
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.CAMERA
+            ).toTypedArray()
+
+        private val REQUIRED_CAM_PERMISSION =
             mutableListOf(
                 Manifest.permission.CAMERA,
-                Manifest.permission.RECORD_AUDIO
-            ).apply {
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-                    add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
-            }.toTypedArray()
+            ).toTypedArray()
+
+        var companionButtonId: Int = 0
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +57,15 @@ class CustomActivity : AppCompatActivity() {
         binding = ActivityCustomBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        ActivityCompat.requestPermissions(
+            this, REQUIRED_ALL_PERMISSIONS, REQUEST_CODE_PERMISSIONS
+        )
+
         buttonViewmodel = ViewModelProvider(this).get(SalmonButtonViewModel::class.java)
+
+        GlobalScope.launch {
+            getImagesFromDb()
+        }
 
         binding.resetButton.setOnClickListener {
             Toast.makeText(this, "reset", Toast.LENGTH_SHORT).show()
@@ -68,20 +82,34 @@ class CustomActivity : AppCompatActivity() {
     }
 
     private fun createOnClickListeners(custBut : View, imgForBut : View, sndForBut : View, buttonId: Int) {
-        val mp : MediaPlayer = MediaPlayer.create(this, R.raw.test)
+
+        //val mp : MediaPlayer = MediaPlayer.create(this, R.raw.test)
         custBut.setOnClickListener {
-            Toast.makeText(this, custBut.contentDescription, Toast.LENGTH_SHORT).show()
-            mp.start()
+            //mp.start()
+            micro.playAudio(micro.choseMediaPlayer(buttonId), buttonId)
         }
         imgForBut.setOnClickListener {
-            Toast.makeText(this, imgForBut.contentDescription, Toast.LENGTH_SHORT).show()
             companionButtonId = buttonId
             takeOrPickPhoto()
         }
         sndForBut.setOnClickListener {
-            Toast.makeText(this, sndForBut.contentDescription, Toast.LENGTH_SHORT).show()
+            if (micro.microPermissionsGranted()) {
+                if (!micro.getIsRecording()) {
+                    micro.recordAudio(buttonId)
+                    sndForBut.backgroundTintList =
+                        ColorStateList.valueOf(resources.getColor(R.color.red))
+                } else {
+                    micro.stopRecord()
+                    sndForBut.backgroundTintList =
+                        ColorStateList.valueOf(resources.getColor(R.color.salmon_orange))
+                }
+            } else {
+                Toast.makeText(this, "please, enable micro permission", Toast.LENGTH_SHORT).show()
+            }
+
         }
     }
+
     private fun resetButtons() {
         imageToStore = BitmapFactory.decodeResource(resources, R.drawable.sound_red_button)
         buttonViewmodel.addButtonToDb(1,imageToStore, "res")
@@ -101,7 +129,7 @@ class CustomActivity : AppCompatActivity() {
     }
 
     private fun takeOrPickPhoto() {
-        if (allPermissionsGranted()) {
+        if (cameraPermissionsGranted()) {
             val builder = AlertDialog.Builder(this)
             builder.setTitle("Choisir une image")
             builder.setItems(arrayOf("Prendre une photo", "Choisir dans la galerie")) { _, which ->
@@ -119,14 +147,11 @@ class CustomActivity : AppCompatActivity() {
             }
             builder.show()
         } else {
-            ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
-            )
-            takeOrPickPhoto()
+            Toast.makeText(this, "please, enable camera permission", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+    private fun cameraPermissionsGranted() = REQUIRED_CAM_PERMISSION.all {
         ContextCompat.checkSelfPermission(
             baseContext, it
         ) == PackageManager.PERMISSION_GRANTED
@@ -171,5 +196,12 @@ class CustomActivity : AppCompatActivity() {
             else ->  binding.yellowCustomButton.setImageBitmap(imageToStore)
         }
         buttonViewmodel.addButtonToDb(buttonId,imageToStore, "photo")
+    }
+
+    private fun getImagesFromDb() {
+        binding.redCustomButton.setImageBitmap(buttonViewmodel.getButtonImage(1))
+        binding.greenCustomButton.setImageBitmap(buttonViewmodel.getButtonImage(2))
+        binding.blueCustomButton.setImageBitmap(buttonViewmodel.getButtonImage(3))
+        binding.yellowCustomButton.setImageBitmap(buttonViewmodel.getButtonImage(4))
     }
 }

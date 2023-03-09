@@ -1,39 +1,64 @@
 package be.helmo.salmon
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import be.helmo.salmon.databinding.ActivityMainBinding
+import be.helmo.salmon.viewModel.SalmonButtonViewModel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var playGameButton: Button
-    private lateinit var loadGameButton: Button
-    private lateinit var customButton: Button
+
+    private lateinit var buttonViewmodel : SalmonButtonViewModel
+
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        playGameButton = findViewById(R.id.play_game_button)
-        loadGameButton = findViewById(R.id.load_game_button)
-        customButton = findViewById(R.id.custom_button)
+        buttonViewmodel = ViewModelProvider(this).get(SalmonButtonViewModel::class.java)
 
-        playGameButton.setOnClickListener { view: View ->
+        GlobalScope.launch {
+            if(buttonViewmodel.getCountButton() == 0) {
+                initButtons()
+            }
+        }
+
+        binding.playGameButton.setOnClickListener {
             Toast.makeText(this, R.string.play_game, Toast.LENGTH_SHORT).show()
             val intent = Intent(this, PlayActivity::class.java)
             startActivity(intent)
         }
-        loadGameButton.setOnClickListener { view: View ->
+        binding.loadGameButton.setOnClickListener {
             Toast.makeText(this, R.string.load_game, Toast.LENGTH_SHORT).show()
             val intent = Intent(this, PlayActivity::class.java)
             startActivity(intent)
         }
-        customButton.setOnClickListener { view: View ->
+        binding.customButton.setOnClickListener {
             Toast.makeText(this, R.string.customize, Toast.LENGTH_SHORT).show()
             val intent = Intent(this, CustomActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun initButtons() {
+        var imageToStore = BitmapFactory.decodeResource(resources, R.drawable.sound_red_button)
+        buttonViewmodel.addButtonToDb(1,imageToStore, "res")
+
+        imageToStore = BitmapFactory.decodeResource(resources, R.drawable.sound_green_button)
+        buttonViewmodel.addButtonToDb(2,imageToStore, "res")
+
+        imageToStore = BitmapFactory.decodeResource(resources, R.drawable.sound_blue_button)
+        buttonViewmodel.addButtonToDb(3,imageToStore, "res")
+
+        imageToStore = BitmapFactory.decodeResource(resources, R.drawable.sound_yellow_button)
+        buttonViewmodel.addButtonToDb(4,imageToStore, "res")
     }
 }

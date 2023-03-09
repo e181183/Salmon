@@ -11,12 +11,12 @@ interface SalmonButtonDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addButton(salmonButton: SalmonButton)
 
-    /*@Query("DELETE * FROM salmonButton")
-    suspend fun resetButtons()*/
-
-    @Query("SELECT * FROM salmonButton WHERE id = (:id)")
-    fun getButton(id: Int): LiveData<SalmonButton>
+    //@Query("SELECT * FROM salmonButton WHERE id = (:id)")
+    //fun getButton(id: Int): LiveData<SalmonButton>
 
     @Query("SELECT image FROM salmonButton WHERE id = (:id)")
     fun getButtonImage(id: Int): Bitmap
+
+    @Query("SELECT COUNT(id) FROM salmonButton")
+    fun getCountButton() : Int
 }
