@@ -41,7 +41,6 @@ class PlayActivity : AppCompatActivity() {
         greenGameButton = findViewById(R.id.green_button)
         blueGameButton = findViewById(R.id.blue_button)
         yellowGameButton = findViewById(R.id.yellow_button)
-        //initiateButton();
         scoreText = findViewById(R.id.actualScore)
         viesText = findViewById(R.id.nbVies)
         niveauText = findViewById(R.id.niveauActuel)
@@ -69,12 +68,6 @@ class PlayActivity : AppCompatActivity() {
 
     }
 
-   /* private fun initiateButton() {
-        redGameButton.setColorFilter(R.color.red, PorterDuff.Mode.ADD)
-        greenGameButton.setColorFilter(R.color.green, PorterDuff.Mode.ADD)
-        blueGameButton.setColorFilter(R.color.blue, PorterDuff.Mode.ADD)
-        yellowGameButton.setColorFilter(R.color.yellow, PorterDuff.Mode.ADD)
-    } */
 
 
     private fun playGame() {
@@ -113,10 +106,10 @@ class PlayActivity : AppCompatActivity() {
     }
 
     private fun getSoundButtonResource(input: Int) = when(input) {
-        0 -> redGameButton.foreground = getDrawable(R.drawable.salmon)
-        1 -> greenGameButton.foreground = getDrawable(R.drawable.salmon)
-        2 -> blueGameButton.foreground = getDrawable(R.drawable.salmon)
-        3 -> yellowGameButton.foreground = getDrawable(R.drawable.salmon)
+        0 -> redGameButton.foreground = getDrawable(R.drawable.salmon_rouge)
+        1 -> greenGameButton.foreground = getDrawable(R.drawable.salmon_vert)
+        2 -> blueGameButton.foreground = getDrawable(R.drawable.salmon_bleu)
+        3 -> yellowGameButton.foreground = getDrawable(R.drawable.salmon_jaune)
         else -> R.drawable.bouton_base_rouge // handle invalid input
     }
 
@@ -152,6 +145,9 @@ class PlayActivity : AppCompatActivity() {
                 displayInput(inputsToFollow, 0);
             } else {
                 val intent = Intent(this, GameoverActivity::class.java)
+                intent.putExtra("SCORE", score)
+                intent.putExtra("NIVEAU", niveau)
+
                 startActivity(intent)
             }
 
