@@ -36,9 +36,13 @@ class SalmonButtonViewModel(application: Application) : AndroidViewModel(applica
         addButtonToDb(salmonButton)
     }
 
-    fun getButton(id : Int) : LiveData<SalmonButton> {
-        return repository.getButton(id)
+    fun getCountButton() : Int {
+        return repository.getCountButton()
     }
+
+    //fun getButton(id : Int) : LiveData<SalmonButton> {
+    //    return repository.getButton(id)
+    //}
 
     fun getButtonImage(id : Int) : Bitmap {
         return repository.getButtonImage(id)
