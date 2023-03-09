@@ -1,15 +1,18 @@
 package be.helmo.salmon
 
-import androidx.appcompat.app.AppCompatActivity
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
 import android.widget.ImageButton
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import be.helmo.salmon.databinding.ActivityPlayBinding
-import kotlinx.coroutines.delay
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.schedule
+
 
 class PlayActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayBinding
@@ -19,7 +22,15 @@ class PlayActivity : AppCompatActivity() {
     private lateinit var blueGameButton: ImageButton
     private lateinit var yellowGameButton: ImageButton
     private  val inputsToFollow = mutableListOf<Int>()
-    private val niveau = 0;
+    private lateinit var scoreText: TextView
+    private lateinit var viesText: TextView
+    private lateinit var niveauText: TextView
+
+    private var niveau = 1;
+    private var nbInput = 0;
+    private var vies = 3;
+    private var score = 0;
+    private var nbErreurs = 0;
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +41,9 @@ class PlayActivity : AppCompatActivity() {
         greenGameButton = findViewById(R.id.green_button)
         blueGameButton = findViewById(R.id.blue_button)
         yellowGameButton = findViewById(R.id.yellow_button)
+        scoreText = findViewById(R.id.actualScore)
+        viesText = findViewById(R.id.nbVies)
+        niveauText = findViewById(R.id.niveauActuel)
 
 
         redGameButton.setOnClickListener() {
@@ -48,36 +62,63 @@ class PlayActivity : AppCompatActivity() {
             verifyInput(3)
         }
 
-        Timer().schedule(2000) {startGame()}
+        updateVisualElements()
+
+        Timer().schedule(1000) {playGame()}
 
     }
 
-    private fun startGame() {
+
+
+    private fun playGame() {
         inputsToFollow.add(pickAnInput())
-
-        for(i in inputsToFollow) {
-            displayInput(i);
-        }
+        disableEnableClick()
+        displayInput(inputsToFollow, 0)
 
     }
 
-    private fun displayInput(input: Int) {
-        when(input) {
-            0 ->{redGameButton.setImageResource(R.drawable.sound_red_button)
-                Timer().schedule(1000){redGameButton.setImageResource(R.drawable.bouton_base_rouge)}
-            }
+    private fun displayInput(inputList: List<Int>, index: Int) {
 
-            1-> {greenGameButton.setImageResource(R.drawable.sound_green_button)
-                Timer().schedule(1000){redGameButton.setImageResource(R.drawable.bouton_base_vert)}
-            }
 
-            2 -> {blueGameButton.setImageResource(R.drawable.sound_blue_button)
-                Timer().schedule(1000){redGameButton.setImageResource(R.drawable.bouton_base_bleu)}
-            }
-            3-> {yellowGameButton.setImageResource(R.drawable.sound_yellow_button)
-                Timer().schedule(1000){redGameButton.setImageResource(R.drawable.bouton_base_jaune)}
+        if (index >= inputList.size) {
+            disableEnableClick()
+            return // stop recursion when all images have been displayed
+        }
+
+        val input = inputList[index]
+        val button = when(input) {
+            0 -> redGameButton
+            1 -> greenGameButton
+            2 -> blueGameButton
+            3 -> yellowGameButton
+            else -> return // handle invalid input
+        }
+
+        button.setImageResource(getSoundButtonResource(input))
+        Timer().schedule(1000) {
+            runOnUiThread {
+                button.setImageResource(getBaseButtonResource(input))
+                Timer().schedule(500){
+                    displayInput(inputList, index + 1)
+                }
             }
         }
+    }
+
+    private fun getSoundButtonResource(input: Int) = when(input) {
+        0 -> R.drawable.sound_red_button
+        1 -> R.drawable.sound_green_button
+        2 -> R.drawable.sound_blue_button
+        3 -> R.drawable.sound_yellow_button
+        else -> R.drawable.bouton_base_rouge // handle invalid input
+    }
+
+    private fun getBaseButtonResource(input: Int) = when(input) {
+        0 -> R.drawable.bouton_base_rouge
+        1 -> R.drawable.bouton_base_vert
+        2 -> R.drawable.bouton_base_bleu
+        3 -> R.drawable.bouton_base_jaune
+        else -> R.drawable.bouton_base_rouge // handle invalid input
     }
 
     private fun pickAnInput() : Int {
@@ -85,10 +126,50 @@ class PlayActivity : AppCompatActivity() {
     }
 
     private fun verifyInput(input: Int) {
-        if(input == inputsToFollow.get(niveau)){
-            
+        if(input == inputsToFollow.get(nbInput)){
+            nbInput++;
+            if(nbInput == inputsToFollow.size) {
+                Toast.makeText(this, R.string.correct, Toast.LENGTH_SHORT).show()
+                updateScore();
+                niveau++;
+                nbInput =0;
+                playGame();
+            }
+
+        } else {
+            vies--;
+            if(vies > 0) {
+                Toast.makeText(this, R.string.Incorrect, Toast.LENGTH_SHORT).show()
+                nbErreurs++;
+                disableEnableClick()
+                displayInput(inputsToFollow, 0);
+            } else {
+                val intent = Intent(this, GameoverActivity::class.java)
+                startActivity(intent)
+            }
+
         }
+
+        updateVisualElements();
     }
 
+    private fun updateVisualElements() {
+        niveauText.text = getString(R.string.niveau) + niveau.toString()
+        viesText.text = getString(R.string.vies) + vies.toString()
+        scoreText.text = getString(R.string.actual_score) + score.toString()
+    }
 
+    private fun updateScore() {
+        score += ((6 * niveau) - (nbErreurs * 3))
+        nbErreurs = 0;
+    }
+
+    private fun disableEnableClick() {
+        runOnUiThread() {
+            redGameButton.isEnabled = !(redGameButton.isEnabled)
+            greenGameButton.isEnabled = !(greenGameButton.isEnabled)
+            blueGameButton.isEnabled = !(blueGameButton.isEnabled)
+            yellowGameButton.isEnabled = !(yellowGameButton.isEnabled)
+        }
+    }
 }

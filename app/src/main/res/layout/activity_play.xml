@@ -14,6 +14,7 @@
         >
 
         <Button
+            android:id="@+id/backToMenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
@@ -30,6 +31,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/highScore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
@@ -38,6 +40,7 @@
                 android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/actualScore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
@@ -46,6 +49,7 @@
                 android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/nbVies"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
@@ -133,6 +137,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center">
         <TextView
+            android:id="@+id/niveauActuel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/mangatb"
