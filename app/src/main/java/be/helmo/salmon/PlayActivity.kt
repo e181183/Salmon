@@ -41,6 +41,7 @@ class PlayActivity : AppCompatActivity() {
         greenGameButton = findViewById(R.id.green_button)
         blueGameButton = findViewById(R.id.blue_button)
         yellowGameButton = findViewById(R.id.yellow_button)
+        //initiateButton();
         scoreText = findViewById(R.id.actualScore)
         viesText = findViewById(R.id.nbVies)
         niveauText = findViewById(R.id.niveauActuel)
@@ -68,6 +69,12 @@ class PlayActivity : AppCompatActivity() {
 
     }
 
+   /* private fun initiateButton() {
+        redGameButton.setColorFilter(R.color.red, PorterDuff.Mode.ADD)
+        greenGameButton.setColorFilter(R.color.green, PorterDuff.Mode.ADD)
+        blueGameButton.setColorFilter(R.color.blue, PorterDuff.Mode.ADD)
+        yellowGameButton.setColorFilter(R.color.yellow, PorterDuff.Mode.ADD)
+    } */
 
 
     private fun playGame() {
@@ -94,10 +101,10 @@ class PlayActivity : AppCompatActivity() {
             else -> return // handle invalid input
         }
 
-        button.setImageResource(getSoundButtonResource(input))
+        runOnUiThread { getSoundButtonResource(input) }
         Timer().schedule(1000) {
             runOnUiThread {
-                button.setImageResource(getBaseButtonResource(input))
+                getBaseButtonResource(input)
                 Timer().schedule(500){
                     displayInput(inputList, index + 1)
                 }
@@ -106,18 +113,18 @@ class PlayActivity : AppCompatActivity() {
     }
 
     private fun getSoundButtonResource(input: Int) = when(input) {
-        0 -> R.drawable.sound_red_button
-        1 -> R.drawable.sound_green_button
-        2 -> R.drawable.sound_blue_button
-        3 -> R.drawable.sound_yellow_button
+        0 -> redGameButton.foreground = getDrawable(R.drawable.salmon)
+        1 -> greenGameButton.foreground = getDrawable(R.drawable.salmon)
+        2 -> blueGameButton.foreground = getDrawable(R.drawable.salmon)
+        3 -> yellowGameButton.foreground = getDrawable(R.drawable.salmon)
         else -> R.drawable.bouton_base_rouge // handle invalid input
     }
 
     private fun getBaseButtonResource(input: Int) = when(input) {
-        0 -> R.drawable.bouton_base_rouge
-        1 -> R.drawable.bouton_base_vert
-        2 -> R.drawable.bouton_base_bleu
-        3 -> R.drawable.bouton_base_jaune
+        0 -> redGameButton.foreground = null
+        1 -> greenGameButton.foreground = null
+        2 -> blueGameButton.foreground = null
+        3 -> yellowGameButton.foreground = null
         else -> R.drawable.bouton_base_rouge // handle invalid input
     }
 

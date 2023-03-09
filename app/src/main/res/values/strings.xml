@@ -4,10 +4,10 @@
     <string name="play_game">Play Game</string>
     <string name="load_game">Load Game</string>
     <string name="customize">My Salmon</string>
-    <string name="highscore">HighScore : </string>
+    <string name="highscore">HighScore :  </string>
     <string name="actual_score">Score : </string>
-    <string name="vies">Vies : </string>
-    <string name="niveau">Niveau : </string>
+    <string name="vies">Vies :  </string>
+    <string name="niveau">Niveau :  </string>
     <string name="menu">Menu</string>
     <string name="resetButtons">Reset Simon</string>
     <string name="SalmonSoundButtonRed">Salmon Sound Button Red</string>

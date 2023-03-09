@@ -8,4 +8,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="salmon_orange">#EC7122</color>
+    <color name="red">#FF0000</color>
+    <color name ="green">#3D9A00</color>
+    <color name="yellow">#F3FA23</color>
+    <color name="blue">#2347FA</color>
 </resources>
