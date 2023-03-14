@@ -1,16 +1,17 @@
 package be.helmo.salmon
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.appcompat.app.AppCompatActivity
+import android.media.AudioManager
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import be.helmo.salmon.databinding.ActivityMainBinding
 import be.helmo.salmon.viewModel.SalmonButtonViewModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -46,6 +47,12 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, CustomActivity::class.java)
             startActivity(intent)
         }
+
+        binding.mute.setOnCheckedChangeListener({_, isChecked ->
+            if(isChecked) {
+
+            }
+        })
     }
 
     private fun initButtons() {
