@@ -3,14 +3,23 @@ package be.helmo.salmon
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import be.helmo.salmon.databinding.ActivityMainBinding
 import be.helmo.salmon.databinding.ActivityPlayBinding
+import be.helmo.salmon.model.Game
+import be.helmo.salmon.viewModel.GameViewModel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -33,11 +42,15 @@ class PlayActivity : AppCompatActivity() {
     private var vies = 3;
     private var score = 0;
     private var nbErreurs = 0;
+    private var sequence = ""
+
+    private lateinit var gameViewModel: GameViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_play)
+        binding = ActivityPlayBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         redGameButton = findViewById(R.id.red_button)
         greenGameButton = findViewById(R.id.green_button)
@@ -47,6 +60,19 @@ class PlayActivity : AppCompatActivity() {
         viesText = findViewById(R.id.nbVies)
         niveauText = findViewById(R.id.niveauActuel)
         highscoreText = findViewById((R.id.highScore))
+
+        gameViewModel = ViewModelProvider(this).get(GameViewModel::class.java)
+
+        GlobalScope.launch {
+            if(gameViewModel.getCountGame() != 0) {
+                for (i in 0 until gameViewModel.getSequence().length)
+                inputsToFollow.add(gameViewModel.getSequence().get(i).toString().toInt())
+            }
+        }
+
+        binding.backToMenu.setOnClickListener() {
+            saveGame(niveau, score, sequence)
+        }
 
         redGameButton.setOnClickListener() {
             verifyInput(0)
@@ -67,13 +93,12 @@ class PlayActivity : AppCompatActivity() {
         updateVisualElements()
 
         Timer().schedule(1000) {playGame()}
-
     }
 
-
-
     private fun playGame() {
-        inputsToFollow.add(pickAnInput())
+        var input = pickAnInput()
+        inputsToFollow.add(input)
+        sequence += input.toString()
         disableEnableClick()
         displayInput(inputsToFollow, 0)
 
@@ -186,5 +211,27 @@ class PlayActivity : AppCompatActivity() {
             blueGameButton.isEnabled = !(blueGameButton.isEnabled)
             yellowGameButton.isEnabled = !(yellowGameButton.isEnabled)
         }
+    }
+
+    private fun saveGame(level : Int, score : Int, sequence : String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Save game and quit ?")
+        builder.setItems(arrayOf("yes", "no")) { _, which ->
+            when (which) {
+                0 -> {
+                    // Sauve la partie et retourne au menu
+                    val game = Game(1, level, score, sequence)
+                    GlobalScope.launch {
+                        gameViewModel.SaveGame(game)
+                    }
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                }
+                1 -> {
+                    // Annuler
+                }
+            }
+        }
+        builder.show()
     }
 }
