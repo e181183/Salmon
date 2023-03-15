@@ -50,8 +50,6 @@ class MainActivity : AppCompatActivity() {
                 isLoadGameActive = true
                 binding.loadGameButton.backgroundTintList=
                     ColorStateList.valueOf(resources.getColor(R.color.salmon_orange))
-
-                //var test = gameViewModel.getSequence()!!.get(3).toString().toInt()
             }
         }
 
@@ -67,12 +65,14 @@ class MainActivity : AppCompatActivity() {
         binding.playGameButton.setOnClickListener {
             Toast.makeText(this, R.string.play_game, Toast.LENGTH_SHORT).show()
             val intent = Intent(this, PlayActivity::class.java)
+            intent.putExtra("isNew", true)
             startActivity(intent)
         }
         binding.loadGameButton.setOnClickListener {
             if (isLoadGameActive) {
                 Toast.makeText(this, R.string.load_game, Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, PlayActivity::class.java)
+                intent.putExtra("isNew", false)
                 startActivity(intent)
             } else {
                 Toast.makeText(this, "There is no saved game", Toast.LENGTH_SHORT).show()
