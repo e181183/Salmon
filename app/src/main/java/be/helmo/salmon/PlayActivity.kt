@@ -51,7 +51,7 @@ class PlayActivity : AppCompatActivity() {
     private var bitmaps = mutableListOf<Bitmap>()
 
     override fun onBackPressed() {
-
+        saveGame(niveau,score,vies,sequence)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,23 +102,40 @@ class PlayActivity : AppCompatActivity() {
         }
 
         binding.redButton.setOnClickListener() {
+            runOnUiThread { getDisplayResource(0) }
             verifyInput(0)
             micro.playAudio(1)
+            Timer().schedule(400) {
+                runOnUiThread { getBaseButtonResource(0)}
+            }
         }
 
         binding.greenButton.setOnClickListener() {
+            runOnUiThread { getDisplayResource(1) }
             verifyInput(1)
             micro.playAudio(2)
+            Timer().schedule(400) {
+                runOnUiThread { getBaseButtonResource(1)}
+            }
+
         }
 
         binding.blueButton.setOnClickListener() {
+            runOnUiThread { getDisplayResource(2) }
             verifyInput(2)
             micro.playAudio(3)
+            Timer().schedule(400) {
+                runOnUiThread { getBaseButtonResource(2)}
+            }
         }
 
         binding.yellowButton.setOnClickListener() {
+            runOnUiThread { getDisplayResource(3) }
             verifyInput(3)
             micro.playAudio(4)
+            Timer().schedule(400) {
+                runOnUiThread { getBaseButtonResource(3)}
+            }
         }
 
         Timer().schedule(1000) {playGame()}
@@ -163,9 +180,7 @@ class PlayActivity : AppCompatActivity() {
         }
     }
 
-    private fun makeSound(idButton : Int) {
 
-    }
     private fun getDisplayResource(input: Int) = when(input) {
         0 -> binding.redButton.foreground = getDrawable(R.drawable.salmon_rouge)
         1 -> binding.greenButton.foreground = getDrawable(R.drawable.salmon_vert)
@@ -194,7 +209,7 @@ class PlayActivity : AppCompatActivity() {
                 updateScore();
                 niveau++;
                 nbInput =0;
-                Timer().schedule(1000){playGame();}
+                Timer().schedule(1500){playGame();}
             }
 
         } else {
@@ -203,7 +218,7 @@ class PlayActivity : AppCompatActivity() {
                 Toast.makeText(this, R.string.Incorrect, Toast.LENGTH_SHORT).show()
                 nbErreurs++;
                 disableEnableClick()
-                Timer().schedule(1000){ displayInput(inputsToFollow, 0);}
+                Timer().schedule(1500){ displayInput(inputsToFollow, 0);}
             } else {
                 val intent = Intent(this, GameoverActivity::class.java)
                 intent.putExtra("SCORE", score)
