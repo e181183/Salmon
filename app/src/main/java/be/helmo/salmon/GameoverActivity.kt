@@ -1,6 +1,7 @@
 package be.helmo.salmon
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -15,6 +16,8 @@ class GameoverActivity : AppCompatActivity() {
 
     private lateinit var finalLevelText: TextView
 
+    private lateinit var highScoreText: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,9 +26,15 @@ class GameoverActivity : AppCompatActivity() {
         backToMenuButton = findViewById(R.id.GameOverButton)
         finalScoreText = findViewById(R.id.finalScore)
         finalLevelText = findViewById(R.id.finalLEvel)
+        highScoreText = findViewById(R.id.highScore)
 
         finalScoreText.text = getString(R.string.actual_score) + intent.getIntExtra("SCORE", 0).toString()
         finalLevelText.text = getString(R.string.niveau) + intent.getIntExtra("NIVEAU", 0).toString()
+
+        val sharedPreferences = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
+        var highScore = sharedPreferences.getInt("high_score_key", 0)
+
+        highScoreText.text = getString(R.string.highscore) + highScore.toString()
 
         finalScoreText.text
         backToMenuButton.setOnClickListener() {

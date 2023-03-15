@@ -1,6 +1,7 @@
 package be.helmo.salmon
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -22,6 +23,7 @@ class PlayActivity : AppCompatActivity() {
     private lateinit var blueGameButton: ImageButton
     private lateinit var yellowGameButton: ImageButton
     private  val inputsToFollow = mutableListOf<Int>()
+    private lateinit var highscoreText: TextView
     private lateinit var scoreText: TextView
     private lateinit var viesText: TextView
     private lateinit var niveauText: TextView
@@ -44,7 +46,7 @@ class PlayActivity : AppCompatActivity() {
         scoreText = findViewById(R.id.actualScore)
         viesText = findViewById(R.id.nbVies)
         niveauText = findViewById(R.id.niveauActuel)
-
+        highscoreText = findViewById((R.id.highScore))
 
         redGameButton.setOnClickListener() {
             verifyInput(0)
@@ -157,9 +159,19 @@ class PlayActivity : AppCompatActivity() {
     }
 
     private fun updateVisualElements() {
+        val sharedPreferences = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
+        var highScore = sharedPreferences.getInt("high_score_key", 0)
+        if(highScore < score) {
+            highScore = score
+            val editor = sharedPreferences.edit()
+            editor.putInt("high_score_key", highScore)
+            editor.apply()
+        }
+
         niveauText.text = getString(R.string.niveau) + niveau.toString()
         viesText.text = getString(R.string.vies) + vies.toString()
         scoreText.text = getString(R.string.actual_score) + score.toString()
+        highscoreText.text =  getString(R.string.highscore) + highScore.toString()
     }
 
     private fun updateScore() {

@@ -10,7 +10,6 @@ import java.io.File
 data class SalmonButton(
     @PrimaryKey
     val id : Int,
-    @ColumnInfo(name = "image") val image : Bitmap? = null,
-    //val sound : File? = null
-    @ColumnInfo(name = "sound") val sound : String? = null
+    @ColumnInfo(name = "imagePath") val imagePath : String? = null,
+    @ColumnInfo(name = "soundPath") val soundPath : String? = null
 )

@@ -1,21 +1,45 @@
 package be.helmo.salmon.viewModel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
+import be.helmo.salmon.database.GameDatabase
 import be.helmo.salmon.model.Game
 import be.helmo.salmon.database.repository.GameRepository
 
-class GameViewModel : ViewModel()  {
+class GameViewModel (application: Application) : AndroidViewModel(application)  {
 
+    private val repository : GameRepository
+
+    init {
+        val gameDao = GameDatabase.getDatabase(application).GameDao()
+        repository = GameRepository(gameDao)
+    }
     fun SaveGame(game : Game) {
-        GameRepository.getInstance()!!.addSavedGame(game)
+        repository.addSavedGame(game)
     }
 
     fun DeleteFinishedSavedGame(game : Game) {
-        GameRepository.getInstance()!!.deleteSavedGame(game)
+        repository.deleteSavedGame(game)
     }
 
     fun getGame(): LiveData<Game> {
-        return GameRepository.getInstance()!!.getGame()
+        return repository.getGame()
+    }
+
+    fun getLevel(): Int {
+        return repository.getLevel()
+    }
+
+    fun getScore(): Int {
+        return repository.getScore()
+    }
+
+    fun getSequence(): String {
+        return repository.getSequence()
+    }
+
+    fun getCountGame() : Int {
+        return repository.getCountGame()
     }
 }
