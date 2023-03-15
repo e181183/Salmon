@@ -48,11 +48,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.mute.setOnCheckedChangeListener({_, isChecked ->
-            if(isChecked) {
-
-            }
-        })
     }
 
     private fun initButtons() {
