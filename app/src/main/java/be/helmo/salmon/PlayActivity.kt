@@ -67,10 +67,10 @@ class PlayActivity : AppCompatActivity() {
         micro = Micro(this, buttonViewmodel)
 
         bitmaps = mutableListOf<Bitmap>(
-            BitmapFactory.decodeResource(resources, R.drawable.sound_red_button),
-            BitmapFactory.decodeResource(resources, R.drawable.sound_green_button),
-            BitmapFactory.decodeResource(resources, R.drawable.sound_blue_button),
-            BitmapFactory.decodeResource(resources, R.drawable.sound_yellow_button)
+            BitmapFactory.decodeResource(resources, R.drawable.bouton_base_rouge),
+            BitmapFactory.decodeResource(resources, R.drawable.bouton_base_vert),
+            BitmapFactory.decodeResource(resources, R.drawable.bouton_base_bleu),
+            BitmapFactory.decodeResource(resources, R.drawable.bouton_base_jaune)
         )
 
         GlobalScope.launch(Dispatchers.IO) {
