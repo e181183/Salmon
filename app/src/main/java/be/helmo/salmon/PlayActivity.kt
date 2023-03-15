@@ -46,11 +46,12 @@ class PlayActivity : AppCompatActivity() {
 
     private lateinit var gameViewModel: GameViewModel
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val isNew = intent.getBooleanExtra("isNew", true)
 
         redGameButton = findViewById(R.id.red_button)
         greenGameButton = findViewById(R.id.green_button)
@@ -64,8 +65,9 @@ class PlayActivity : AppCompatActivity() {
         gameViewModel = ViewModelProvider(this).get(GameViewModel::class.java)
 
         GlobalScope.launch {
-            if(gameViewModel.getCountGame() != 0) {
-                for (i in 0 until gameViewModel.getSequence().length)
+            if(gameViewModel.getCountGame() != 0 && !isNew) {
+                sequence = gameViewModel.getSequence()
+                for (i in 0 until sequence.length)
                 inputsToFollow.add(gameViewModel.getSequence().get(i).toString().toInt())
             }
         }
