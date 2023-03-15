@@ -9,7 +9,9 @@ import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import be.helmo.salmon.databinding.ActivityMainBinding
 import be.helmo.salmon.databinding.ActivityPlayBinding
 import java.util.*
 import kotlin.concurrent.schedule
@@ -18,16 +20,7 @@ import kotlin.concurrent.schedule
 class PlayActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayBinding
 
-    private lateinit var redGameButton: ImageButton
-    private lateinit var greenGameButton: ImageButton
-    private lateinit var blueGameButton: ImageButton
-    private lateinit var yellowGameButton: ImageButton
     private  val inputsToFollow = mutableListOf<Int>()
-    private lateinit var highscoreText: TextView
-    private lateinit var scoreText: TextView
-    private lateinit var viesText: TextView
-    private lateinit var niveauText: TextView
-
     private var niveau = 1;
     private var nbInput = 0;
     private var vies = 3;
@@ -35,32 +28,30 @@ class PlayActivity : AppCompatActivity() {
     private var nbErreurs = 0;
 
 
+    override fun onBackPressed() {
+        
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_play)
+        binding = ActivityPlayBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        redGameButton = findViewById(R.id.red_button)
-        greenGameButton = findViewById(R.id.green_button)
-        blueGameButton = findViewById(R.id.blue_button)
-        yellowGameButton = findViewById(R.id.yellow_button)
-        scoreText = findViewById(R.id.actualScore)
-        viesText = findViewById(R.id.nbVies)
-        niveauText = findViewById(R.id.niveauActuel)
-        highscoreText = findViewById((R.id.highScore))
 
-        redGameButton.setOnClickListener() {
+
+        binding.redButton.setOnClickListener() {
             verifyInput(0)
         }
 
-        greenGameButton.setOnClickListener() {
+        binding.greenButton.setOnClickListener() {
             verifyInput(1)
         }
 
-        blueGameButton.setOnClickListener() {
+        binding.blueButton.setOnClickListener() {
             verifyInput(2)
         }
 
-        yellowGameButton.setOnClickListener() {
+        binding.yellowButton.setOnClickListener() {
             verifyInput(3)
         }
 
@@ -89,14 +80,14 @@ class PlayActivity : AppCompatActivity() {
 
         val input = inputList[index]
         val button = when(input) {
-            0 -> redGameButton
-            1 -> greenGameButton
-            2 -> blueGameButton
-            3 -> yellowGameButton
+            0 -> binding.redButton
+            1 -> binding.greenButton
+            2 -> binding.blueButton
+            3 -> binding.yellowButton
             else -> return // handle invalid input
         }
 
-        runOnUiThread { getSoundButtonResource(input) }
+        runOnUiThread { getDisplayResource(input) }
         Timer().schedule(1000) {
             runOnUiThread {
                 getBaseButtonResource(input)
@@ -107,20 +98,20 @@ class PlayActivity : AppCompatActivity() {
         }
     }
 
-    private fun getSoundButtonResource(input: Int) = when(input) {
-        0 -> redGameButton.foreground = getDrawable(R.drawable.salmon_rouge)
-        1 -> greenGameButton.foreground = getDrawable(R.drawable.salmon_vert)
-        2 -> blueGameButton.foreground = getDrawable(R.drawable.salmon_bleu)
-        3 -> yellowGameButton.foreground = getDrawable(R.drawable.salmon_jaune)
-        else -> R.drawable.bouton_base_rouge // handle invalid input
+    private fun getDisplayResource(input: Int) = when(input) {
+        0 -> binding.redButton.foreground = getDrawable(R.drawable.salmon_rouge)
+        1 -> binding.greenButton.foreground = getDrawable(R.drawable.salmon_vert)
+        2 -> binding.blueButton.foreground = getDrawable(R.drawable.salmon_bleu)
+        3 -> binding.yellowButton.foreground = getDrawable(R.drawable.salmon_jaune)
+        else -> binding.redButton.foreground = getDrawable(R.drawable.salmon_rouge) // handle invalid input
     }
 
     private fun getBaseButtonResource(input: Int) = when(input) {
-        0 -> redGameButton.foreground = null
-        1 -> greenGameButton.foreground = null
-        2 -> blueGameButton.foreground = null
-        3 -> yellowGameButton.foreground = null
-        else -> R.drawable.bouton_base_rouge // handle invalid input
+        0 -> binding.redButton.foreground = null
+        1 -> binding.greenButton.foreground = null
+        2 -> binding.blueButton.foreground = null
+        3 -> binding.yellowButton.foreground = null
+        else -> binding.redButton.foreground = null // handle invalid input
     }
 
     private fun pickAnInput() : Int {
@@ -168,10 +159,10 @@ class PlayActivity : AppCompatActivity() {
             editor.apply()
         }
 
-        niveauText.text = getString(R.string.niveau) + niveau.toString()
-        viesText.text = getString(R.string.vies) + vies.toString()
-        scoreText.text = getString(R.string.actual_score) + score.toString()
-        highscoreText.text =  getString(R.string.highscore) + highScore.toString()
+        binding.niveauActuel.text = getString(R.string.niveau) + niveau.toString()
+        binding.nbVies.text = getString(R.string.vies) + vies.toString()
+        binding.actualScore.text = getString(R.string.actual_score) + score.toString()
+        binding.highScore.text =  getString(R.string.highscore) + highScore.toString()
     }
 
     private fun updateScore() {
@@ -181,10 +172,10 @@ class PlayActivity : AppCompatActivity() {
 
     private fun disableEnableClick() {
         runOnUiThread() {
-            redGameButton.isEnabled = !(redGameButton.isEnabled)
-            greenGameButton.isEnabled = !(greenGameButton.isEnabled)
-            blueGameButton.isEnabled = !(blueGameButton.isEnabled)
-            yellowGameButton.isEnabled = !(yellowGameButton.isEnabled)
+            binding.redButton.isEnabled = !(binding.redButton.isEnabled)
+            binding.greenButton.isEnabled = !(binding.greenButton.isEnabled)
+            binding.blueButton.isEnabled = !(binding.blueButton.isEnabled)
+            binding.yellowButton.isEnabled = !(binding.yellowButton.isEnabled)
         }
     }
 }

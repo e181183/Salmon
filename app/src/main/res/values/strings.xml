@@ -8,7 +8,7 @@
     <string name="actual_score">Score : </string>
     <string name="vies">Vies :  </string>
     <string name="niveau">Niveau :  </string>
-    <string name="menu">Menu</string>
+    <string name="menu">Save and \n quit</string>
     <string name="resetButtons">Reset Simon</string>
     <string name="SalmonSoundButtonRed">Salmon Sound Button Red</string>
     <string name="ChangeImageRed">Change Image Red</string>
