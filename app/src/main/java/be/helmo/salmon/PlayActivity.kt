@@ -39,7 +39,7 @@ class PlayActivity : AppCompatActivity() {
     private lateinit var gameViewModel: GameViewModel
 
     override fun onBackPressed() {
-        
+        saveGame(niveau, score, sequence);
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,9 +54,12 @@ class PlayActivity : AppCompatActivity() {
         GlobalScope.launch {
             if(gameViewModel.getCountGame() != 0 && !isNew) {
                 sequence = gameViewModel.getSequence()
+                niveau = gameViewModel.getLevel()
+                score = gameViewModel.getScore()
                 for (i in 0 until sequence.length)
                 inputsToFollow.add(gameViewModel.getSequence().get(i).toString().toInt())
             }
+            updateVisualElements()
         }
 
         binding.backToMenu.setOnClickListener() {
@@ -79,7 +82,7 @@ class PlayActivity : AppCompatActivity() {
             verifyInput(3)
         }
 
-        updateVisualElements()
+
 
         Timer().schedule(1000) {playGame()}
     }
@@ -111,7 +114,9 @@ class PlayActivity : AppCompatActivity() {
         }
 
         runOnUiThread { getDisplayResource(input) }
+
         Timer().schedule(1000) {
+
             runOnUiThread {
                 getBaseButtonResource(input)
                 Timer().schedule(500){
@@ -121,6 +126,9 @@ class PlayActivity : AppCompatActivity() {
         }
     }
 
+    private fun makeSound(idButton : Int) {
+
+    }
     private fun getDisplayResource(input: Int) = when(input) {
         0 -> binding.redButton.foreground = getDrawable(R.drawable.salmon_rouge)
         1 -> binding.greenButton.foreground = getDrawable(R.drawable.salmon_vert)
@@ -158,7 +166,7 @@ class PlayActivity : AppCompatActivity() {
                 Toast.makeText(this, R.string.Incorrect, Toast.LENGTH_SHORT).show()
                 nbErreurs++;
                 disableEnableClick()
-                displayInput(inputsToFollow, 0);
+                Timer().schedule(400){ displayInput(inputsToFollow, 0);}
             } else {
                 val intent = Intent(this, GameoverActivity::class.java)
                 intent.putExtra("SCORE", score)
