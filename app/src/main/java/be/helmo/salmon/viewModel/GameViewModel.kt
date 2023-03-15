@@ -35,6 +35,10 @@ class GameViewModel (application: Application) : AndroidViewModel(application)  
         return repository.getScore()
     }
 
+    fun getLifes(): Int {
+        return repository.getLifes()
+    }
+
     fun getSequence(): String {
         return repository.getSequence()
     }

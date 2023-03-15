@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
@@ -19,8 +21,12 @@ import be.helmo.salmon.databinding.ActivityMainBinding
 import be.helmo.salmon.databinding.ActivityPlayBinding
 import be.helmo.salmon.model.Game
 import be.helmo.salmon.viewModel.GameViewModel
+import be.helmo.salmon.viewModel.SalmonButtonViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -38,8 +44,14 @@ class PlayActivity : AppCompatActivity() {
 
     private lateinit var gameViewModel: GameViewModel
 
+    private lateinit var buttonViewmodel : SalmonButtonViewModel
+
+    private lateinit var micro : Micro
+
+    private var bitmaps = mutableListOf<Bitmap>()
+
     override fun onBackPressed() {
-        saveGame(niveau, score, sequence);
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,39 +62,64 @@ class PlayActivity : AppCompatActivity() {
         val isNew = intent.getBooleanExtra("isNew", true)
 
         gameViewModel = ViewModelProvider(this).get(GameViewModel::class.java)
+        buttonViewmodel = ViewModelProvider(this).get(SalmonButtonViewModel::class.java)
 
-        GlobalScope.launch {
+        micro = Micro(this, buttonViewmodel)
+
+        bitmaps = mutableListOf<Bitmap>(
+            BitmapFactory.decodeResource(resources, R.drawable.sound_red_button),
+            BitmapFactory.decodeResource(resources, R.drawable.sound_green_button),
+            BitmapFactory.decodeResource(resources, R.drawable.sound_blue_button),
+            BitmapFactory.decodeResource(resources, R.drawable.sound_yellow_button)
+        )
+
+        GlobalScope.launch(Dispatchers.IO) {
             if(gameViewModel.getCountGame() != 0 && !isNew) {
                 sequence = gameViewModel.getSequence()
                 niveau = gameViewModel.getLevel()
                 score = gameViewModel.getScore()
+                vies = gameViewModel.getLifes()
                 for (i in 0 until sequence.length)
                 inputsToFollow.add(gameViewModel.getSequence().get(i).toString().toInt())
             }
             updateVisualElements()
+
+        }
+
+        GlobalScope.launch(Dispatchers.IO) {
+            getImagesFromDb()
+            withContext(Dispatchers.Main) {
+                binding.redButton.setImageBitmap(bitmaps[0])
+                binding.greenButton.setImageBitmap(bitmaps[1])
+                binding.blueButton.setImageBitmap(bitmaps[2])
+                binding.yellowButton.setImageBitmap(bitmaps[3])
+            }
+
         }
 
         binding.backToMenu.setOnClickListener() {
-            saveGame(niveau, score, sequence)
+            saveGame(niveau, score, vies, sequence)
         }
 
         binding.redButton.setOnClickListener() {
             verifyInput(0)
+            micro.playAudio(1)
         }
 
         binding.greenButton.setOnClickListener() {
             verifyInput(1)
+            micro.playAudio(2)
         }
 
         binding.blueButton.setOnClickListener() {
             verifyInput(2)
+            micro.playAudio(3)
         }
 
         binding.yellowButton.setOnClickListener() {
             verifyInput(3)
+            micro.playAudio(4)
         }
-
-
 
         Timer().schedule(1000) {playGame()}
     }
@@ -97,8 +134,6 @@ class PlayActivity : AppCompatActivity() {
     }
 
     private fun displayInput(inputList: List<Int>, index: Int) {
-
-
         if (index >= inputList.size) {
             disableEnableClick()
             return // stop recursion when all images have been displayed
@@ -114,6 +149,8 @@ class PlayActivity : AppCompatActivity() {
         }
 
         runOnUiThread { getDisplayResource(input) }
+
+        micro.playAudio(input+1)
 
         Timer().schedule(1000) {
 
@@ -157,7 +194,7 @@ class PlayActivity : AppCompatActivity() {
                 updateScore();
                 niveau++;
                 nbInput =0;
-                playGame();
+                Timer().schedule(1000){playGame();}
             }
 
         } else {
@@ -166,7 +203,7 @@ class PlayActivity : AppCompatActivity() {
                 Toast.makeText(this, R.string.Incorrect, Toast.LENGTH_SHORT).show()
                 nbErreurs++;
                 disableEnableClick()
-                Timer().schedule(400){ displayInput(inputsToFollow, 0);}
+                Timer().schedule(1000){ displayInput(inputsToFollow, 0);}
             } else {
                 val intent = Intent(this, GameoverActivity::class.java)
                 intent.putExtra("SCORE", score)
@@ -210,14 +247,14 @@ class PlayActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveGame(level : Int, score : Int, sequence : String) {
+    private fun saveGame(level : Int, score : Int, lifes : Int, sequence : String) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Save game and quit ?")
         builder.setItems(arrayOf("yes", "no")) { _, which ->
             when (which) {
                 0 -> {
                     // Sauve la partie et retourne au menu
-                    val game = Game(1, level, score, sequence)
+                    val game = Game(1, level, score, lifes, sequence)
                     GlobalScope.launch {
                         gameViewModel.SaveGame(game)
                     }
@@ -230,5 +267,16 @@ class PlayActivity : AppCompatActivity() {
             }
         }
         builder.show()
+    }
+
+    private fun getImagesFromDb() {
+        for (i in 1..4) {
+            if (buttonViewmodel.getImagePath(i) != null){
+                var file = File(buttonViewmodel.getImagePath(i))
+                if (file.exists()) {
+                    bitmaps.set(i - 1, BitmapFactory.decodeFile(file.absolutePath))
+                }
+            }
+        }
     }
 }

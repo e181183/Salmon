@@ -28,6 +28,10 @@ class GameRepository(private val gameDao: GameDao) {
         return gameDao.getScore()
     }
 
+    fun getLifes(): Int {
+        return gameDao.getLifes()
+    }
+
     fun getSequence(): String {
         return gameDao.getSequence()
     }
