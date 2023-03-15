@@ -6,9 +6,9 @@ import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
@@ -19,19 +19,26 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import be.helmo.salmon.databinding.ActivityCustomBinding
 import be.helmo.salmon.viewModel.SalmonButtonViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 
 class CustomActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCustomBinding
 
     private lateinit var imagePath : Uri
+    private lateinit var imagePathString : String
     private lateinit var imageToStore : Bitmap
 
     private lateinit var buttonViewmodel : SalmonButtonViewModel
 
-    private var micro : Micro = Micro(this)
+    private lateinit var micro : Micro
+
+    private var bitmaps = mutableListOf<Bitmap>()
 
     companion object {
         const val REQUEST_IMAGE_CAPTURE = 88
@@ -63,13 +70,32 @@ class CustomActivity : AppCompatActivity() {
 
         buttonViewmodel = ViewModelProvider(this).get(SalmonButtonViewModel::class.java)
 
-        GlobalScope.launch {
+        micro = Micro(this, buttonViewmodel)
+
+        bitmaps = mutableListOf<Bitmap>(
+            BitmapFactory.decodeResource(resources, R.drawable.sound_red_button),
+            BitmapFactory.decodeResource(resources, R.drawable.sound_green_button),
+            BitmapFactory.decodeResource(resources, R.drawable.sound_blue_button),
+            BitmapFactory.decodeResource(resources, R.drawable.sound_yellow_button)
+        )
+
+        GlobalScope.launch(Dispatchers.IO) {
             getImagesFromDb()
+            withContext(Dispatchers.Main) {
+                binding.redCustomButton.setImageBitmap(bitmaps[0])
+                binding.greenCustomButton.setImageBitmap(bitmaps[1])
+                binding.blueCustomButton.setImageBitmap(bitmaps[2])
+                binding.yellowCustomButton.setImageBitmap(bitmaps[3])
+            }
         }
 
-        binding.resetButton.setOnClickListener {
+        binding.resetImages.setOnClickListener {
             Toast.makeText(this, "reset", Toast.LENGTH_SHORT).show()
-            resetButtons()
+            resetButtonsImages()
+        }
+        binding.resetSounds.setOnClickListener {
+            Toast.makeText(this, "reset", Toast.LENGTH_SHORT).show()
+            micro.resetAllSounds()
         }
         //red(1)
         createOnClickListeners(binding.redCustomButton, binding.imageForRed, binding.soundForRed, 1)
@@ -83,10 +109,8 @@ class CustomActivity : AppCompatActivity() {
 
     private fun createOnClickListeners(custBut : View, imgForBut : View, sndForBut : View, buttonId: Int) {
 
-        //val mp : MediaPlayer = MediaPlayer.create(this, R.raw.test)
         custBut.setOnClickListener {
-            //mp.start()
-            micro.playAudio(micro.choseMediaPlayer(buttonId), buttonId)
+            micro.playAudio(buttonId)
         }
         imgForBut.setOnClickListener {
             companionButtonId = buttonId
@@ -94,14 +118,18 @@ class CustomActivity : AppCompatActivity() {
         }
         sndForBut.setOnClickListener {
             if (micro.microPermissionsGranted()) {
-                if (!micro.getIsRecording()) {
+                if (!micro.getIsRecording()) { //enregistre le son
                     micro.recordAudio(buttonId)
                     sndForBut.backgroundTintList =
                         ColorStateList.valueOf(resources.getColor(R.color.red))
-                } else {
-                    micro.stopRecord()
+
+                } else if(sndForBut.backgroundTintList == ColorStateList.valueOf(resources.getColor(R.color.red))) {
+                    //coupe l'enregistrement si le bouton de son correspond au bon SalmonButton
+                    micro.stopRecord(buttonId)
                     sndForBut.backgroundTintList =
                         ColorStateList.valueOf(resources.getColor(R.color.salmon_orange))
+                } else {
+                    Toast.makeText(this, "only one record at a time", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 Toast.makeText(this, "please, enable micro permission", Toast.LENGTH_SHORT).show()
@@ -110,22 +138,14 @@ class CustomActivity : AppCompatActivity() {
         }
     }
 
-    private fun resetButtons() {
-        imageToStore = BitmapFactory.decodeResource(resources, R.drawable.sound_red_button)
-        buttonViewmodel.addButtonToDb(1,imageToStore, "res")
-        binding.redCustomButton.setImageBitmap(imageToStore)
-
-        imageToStore = BitmapFactory.decodeResource(resources, R.drawable.sound_green_button)
-        buttonViewmodel.addButtonToDb(2,imageToStore, "res")
-        binding.greenCustomButton.setImageBitmap(imageToStore)
-
-        imageToStore = BitmapFactory.decodeResource(resources, R.drawable.sound_blue_button)
-        buttonViewmodel.addButtonToDb(3,imageToStore, "res")
-        binding.blueCustomButton.setImageBitmap(imageToStore)
-
-        imageToStore = BitmapFactory.decodeResource(resources, R.drawable.sound_yellow_button)
-        buttonViewmodel.addButtonToDb(4,imageToStore, "res")
-        binding.yellowCustomButton.setImageBitmap(imageToStore)
+    private fun resetButtonsImages() {
+        binding.redCustomButton.setImageResource(R.drawable.sound_red_button)
+        binding.greenCustomButton.setImageResource(R.drawable.sound_green_button)
+        binding.blueCustomButton.setImageResource(R.drawable.sound_blue_button)
+        binding.yellowCustomButton.setImageResource(R.drawable.sound_yellow_button)
+        GlobalScope.launch(Dispatchers.IO) {
+          buttonViewmodel.resetImages()
+        }
     }
 
     private fun takeOrPickPhoto() {
@@ -195,13 +215,41 @@ class CustomActivity : AppCompatActivity() {
             3 ->  binding.blueCustomButton.setImageBitmap(imageToStore)
             else ->  binding.yellowCustomButton.setImageBitmap(imageToStore)
         }
-        buttonViewmodel.addButtonToDb(buttonId,imageToStore, "photo")
+        imagePathString = saveImageToInternalStorage(imageToStore, buttonId)
+        GlobalScope.launch(Dispatchers.IO) {
+            if (buttonViewmodel.isButtonStored(buttonId) != 0) {
+                buttonViewmodel.setButtonImage(buttonId, imagePathString)
+            } else {
+                buttonViewmodel.addButtonToDb(buttonId, imagePathString, null)
+            }
+        }
+    }
+
+    private fun saveImageToInternalStorage(bitmap: Bitmap, buttonId: Int): String {
+        val directory = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "my_images")
+        if (!directory.exists()) {
+            directory.mkdirs()
+        }
+        val fileName = "salmonButtonImage_$buttonId.jpg"
+        val file = File(directory, fileName)
+
+        val stream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream)
+        stream.flush()
+        stream.close()
+
+        return file.absolutePath
     }
 
     private fun getImagesFromDb() {
-        binding.redCustomButton.setImageBitmap(buttonViewmodel.getButtonImage(1))
-        binding.greenCustomButton.setImageBitmap(buttonViewmodel.getButtonImage(2))
-        binding.blueCustomButton.setImageBitmap(buttonViewmodel.getButtonImage(3))
-        binding.yellowCustomButton.setImageBitmap(buttonViewmodel.getButtonImage(4))
+        for (i in 1..4) {
+            if (buttonViewmodel.getImagePath(i) != null){
+                var file = File(buttonViewmodel.getImagePath(i))
+                if (file.exists()) {
+                    bitmaps.set(i - 1, BitmapFactory.decodeFile(file.absolutePath))
+                }
+            }
+        }
     }
+
 }

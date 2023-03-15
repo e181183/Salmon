@@ -1,13 +1,12 @@
 package be.helmo.salmon.database.repository
 
 import androidx.lifecycle.LiveData
+import androidx.room.Query
 import be.helmo.salmon.model.Game
 import be.helmo.salmon.database.GameDatabase
 import be.helmo.salmon.database.dao.GameDao
 
-class GameRepository {
-
-    private val gameDao : GameDao = GameDatabase.getInstance()!!.GameDao()
+class GameRepository(private val gameDao: GameDao) {
 
     fun addSavedGame(game : Game) {
         gameDao.addSavedGame(game)
@@ -18,16 +17,22 @@ class GameRepository {
     }
 
     fun getGame() : LiveData<Game> {
-        return gameDao.getGame(1)
+        return gameDao.getGame()
     }
 
-    companion object {
-        private var instance : GameRepository? = null
-        fun getInstance(): GameRepository? {
-            if (instance == null) {
-                instance = GameRepository()
-            }
-            return instance
-        }
+    fun getLevel(): Int {
+        return gameDao.getLevel()
+    }
+
+    fun getScore(): Int {
+        return gameDao.getScore()
+    }
+
+    fun getSequence(): String {
+        return gameDao.getSequence()
+    }
+
+    fun getCountGame() : Int {
+        return gameDao.getCountGame()
     }
 }

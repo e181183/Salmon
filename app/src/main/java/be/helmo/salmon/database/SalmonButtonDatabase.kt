@@ -4,12 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import be.helmo.salmon.model.SalmonButton
 import be.helmo.salmon.database.dao.SalmonButtonDao
 
 @Database(entities = [ SalmonButton::class ], version=1)
-@TypeConverters(SalmonButtonTypeConverters::class)
 abstract class SalmonButtonDatabase : RoomDatabase() {
     abstract fun SalmonButtonDao(): SalmonButtonDao
 

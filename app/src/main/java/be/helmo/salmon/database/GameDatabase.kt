@@ -2,7 +2,7 @@ package be.helmo.salmon.database
 
 import android.content.Context
 import androidx.room.Database
-import androidx.room.Room.databaseBuilder
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import be.helmo.salmon.model.Game
 import be.helmo.salmon.database.dao.GameDao
@@ -14,26 +14,27 @@ abstract class GameDatabase : RoomDatabase() {
 
     companion object {
         private const val DATABASE_NAME = "game_database"
-        //@Volatile
-        private var instance: GameDatabase? = null
+        @Volatile
+        private var INSTANCE: GameDatabase? = null
 
-        fun initDatabase(context: Context){
-            if(instance == null) {
-                instance = databaseBuilder(
+        fun getDatabase(context: Context) : GameDatabase {
+            val tempInstance = INSTANCE
+            if (tempInstance != null) {
+                return tempInstance
+            }
+            synchronized(this){
+                val instance = Room.databaseBuilder(
                     context.applicationContext,
                     GameDatabase::class.java,
                     DATABASE_NAME
                 ).build()
+                INSTANCE = instance
+                return instance
             }
         }
 
-        fun getInstance(): GameDatabase? {
-            checkNotNull(instance) { "Game database must be initialized" }
-            return instance
-        }
-
         fun disconnectDatabase(){
-            instance = null
+            INSTANCE = null
         }
     }
 }
