@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
@@ -33,7 +32,7 @@
         android:layout_height="85dp"
         android:layout_gravity="center"
         android:layout_margin="5dp"
-        android:backgroundTint="#4E4E4E"
+        android:backgroundTint="#717171"
         android:fontFamily="@font/mangatb"
         android:text="@string/load_game"
         android:textColor="@color/black"
@@ -54,7 +53,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="95dp"
+        android:layout_height="0dp"
         android:textAlignment="center"
         android:layout_weight="1">
 

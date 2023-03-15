@@ -31,9 +31,5 @@ abstract class SalmonButtonDatabase : RoomDatabase() {
                 return instance
             }
         }
-
-        fun disconnectDatabase(){
-            INSTANCE = null
-        }
     }
 }

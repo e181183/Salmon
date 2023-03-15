@@ -10,6 +10,6 @@ data class Game(
     val id : Int,
     @ColumnInfo(name = "level") val level: Int,
     @ColumnInfo(name = "score") val score: Int,
-    @ColumnInfo(name = "lifes") val lifes: Int,
+    @ColumnInfo(name = "lives") val lives: Int,
     @ColumnInfo(name = "sequence") val sequence: String
 )

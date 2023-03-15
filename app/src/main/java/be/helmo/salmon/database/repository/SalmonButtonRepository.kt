@@ -29,10 +29,6 @@ class SalmonButtonRepository(private val salmonButtonDao : SalmonButtonDao) {
         return salmonButtonDao.getSoundPath(id)
     }
 
-    fun getCountButton() : Int{
-        return salmonButtonDao.getCountButton()
-    }
-
     fun setButtonImage(id: Int, img: String) {
         salmonButtonDao.setButtonImage(id, img)
     }

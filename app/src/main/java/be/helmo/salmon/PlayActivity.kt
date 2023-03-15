@@ -1,23 +1,15 @@
 package be.helmo.salmon
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.PorterDuff
 import android.os.Bundle
-import android.provider.MediaStore
-import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import be.helmo.salmon.databinding.ActivityMainBinding
 import be.helmo.salmon.databinding.ActivityPlayBinding
 import be.helmo.salmon.model.Game
 import be.helmo.salmon.viewModel.GameViewModel
@@ -35,11 +27,11 @@ class PlayActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayBinding
 
     private  val inputsToFollow = mutableListOf<Int>()
-    private var niveau = 1;
-    private var nbInput = 0;
-    private var vies = 3;
-    private var score = 0;
-    private var nbErreurs = 0;
+    private var niveau = 1
+    private var nbInput = 0
+    private var vies = 3
+    private var score = 0
+    private var nbErreurs = 0
     private var sequence = ""
     private var isNew : Boolean = true
 
@@ -47,7 +39,7 @@ class PlayActivity : AppCompatActivity() {
 
     private lateinit var buttonViewmodel : SalmonButtonViewModel
 
-    private lateinit var micro : Micro
+    private lateinit var sound : Sound
 
     private var bitmaps = mutableListOf<Bitmap>()
 
@@ -62,10 +54,10 @@ class PlayActivity : AppCompatActivity() {
 
         isNew = intent.getBooleanExtra("isNew", true)
 
-        gameViewModel = ViewModelProvider(this).get(GameViewModel::class.java)
-        buttonViewmodel = ViewModelProvider(this).get(SalmonButtonViewModel::class.java)
+        gameViewModel = ViewModelProvider(this)[GameViewModel::class.java]
+        buttonViewmodel = ViewModelProvider(this)[SalmonButtonViewModel::class.java]
 
-        micro = Micro(this, buttonViewmodel)
+        sound = Sound(this, buttonViewmodel)
 
         bitmaps = mutableListOf<Bitmap>(
             BitmapFactory.decodeResource(resources, R.drawable.bouton_base_rouge),
@@ -79,9 +71,9 @@ class PlayActivity : AppCompatActivity() {
                 sequence = gameViewModel.getSequence()
                 niveau = gameViewModel.getLevel()
                 score = gameViewModel.getScore()
-                vies = gameViewModel.getLifes()
+                vies = gameViewModel.getLives()
                 for (i in 0 until sequence.length) {
-                    inputsToFollow.add(gameViewModel.getSequence().get(i).toString().toInt())
+                    inputsToFollow.add(gameViewModel.getSequence()[i].toString().toInt())
                 }
             }
             updateVisualElements()
@@ -103,22 +95,22 @@ class PlayActivity : AppCompatActivity() {
 
         binding.redButton.setOnClickListener() {
             verifyInput(0)
-            micro.playAudio(1)
+            sound.playAudio(1)
         }
 
         binding.greenButton.setOnClickListener() {
             verifyInput(1)
-            micro.playAudio(2)
+            sound.playAudio(2)
         }
 
         binding.blueButton.setOnClickListener() {
             verifyInput(2)
-            micro.playAudio(3)
+            sound.playAudio(3)
         }
 
         binding.yellowButton.setOnClickListener() {
             verifyInput(3)
-            micro.playAudio(4)
+            sound.playAudio(4)
         }
 
         Timer().schedule(1000) {playGame(isNew)}
@@ -150,7 +142,7 @@ class PlayActivity : AppCompatActivity() {
         }
 
         runOnUiThread { getDisplayResource(input) }
-        micro.playAudio(input+1)
+        sound.playAudio(input+1)
         Timer().schedule(1000) {
             runOnUiThread {
                 getBaseButtonResource(input)
@@ -178,30 +170,30 @@ class PlayActivity : AppCompatActivity() {
     }
 
     private fun pickAnInput() : Int {
-         return (0..3).random();
+         return (0..3).random()
     }
 
     private fun verifyInput(input: Int) {
         if(input == inputsToFollow.get(nbInput)){
-            nbInput++;
+            nbInput++
             if(nbInput == inputsToFollow.size) {
                 Toast.makeText(this, R.string.correct, Toast.LENGTH_SHORT).show()
-                updateScore();
-                niveau++;
-                nbInput =0;
-                playGame(true);
+                updateScore()
+                niveau++
+                nbInput =0
+                playGame(true)
             }
 
         } else {
-            vies--;
+            vies--
             if(vies > 0) {
                 Toast.makeText(this, R.string.Incorrect, Toast.LENGTH_SHORT).show()
-                nbErreurs++;
+                nbErreurs++
                 disableEnableClick()
-                displayInput(inputsToFollow, 0);
+                displayInput(inputsToFollow, 0)
             } else {
                 GlobalScope.launch(Dispatchers.IO){
-                    gameViewModel.DeleteFinishedSavedGame()
+                    gameViewModel.deleteFinishedSavedGame()
                 }
                 val intent = Intent(this, GameoverActivity::class.java)
                 intent.putExtra("SCORE", score)
@@ -212,7 +204,7 @@ class PlayActivity : AppCompatActivity() {
 
         }
 
-        updateVisualElements();
+        updateVisualElements()
     }
 
     private fun updateVisualElements() {
@@ -233,7 +225,7 @@ class PlayActivity : AppCompatActivity() {
 
     private fun updateScore() {
         score += ((6 * niveau) - (nbErreurs * 3))
-        nbErreurs = 0;
+        nbErreurs = 0
     }
 
     private fun disableEnableClick() {
@@ -245,16 +237,16 @@ class PlayActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveGame(level : Int, score : Int, lifes : Int, sequence : String) {
+    private fun saveGame(level : Int, score : Int, lives : Int, sequence : String) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Save game and quit ?")
         builder.setItems(arrayOf("yes", "no")) { _, which ->
             when (which) {
                 0 -> {
                     // Sauve la partie et retourne au menu
-                    val game = Game(1, level, score, lifes, sequence)
-                    GlobalScope.launch {
-                        gameViewModel.SaveGame(game)
+                    val game = Game(1, level, score, lives, sequence)
+                    GlobalScope.launch(Dispatchers.IO) {
+                        gameViewModel.saveGame(game)
                     }
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
@@ -272,7 +264,7 @@ class PlayActivity : AppCompatActivity() {
             if (buttonViewmodel.getImagePath(i) != null){
                 var file = File(buttonViewmodel.getImagePath(i))
                 if (file.exists()) {
-                    bitmaps.set(i - 1, BitmapFactory.decodeFile(file.absolutePath))
+                    bitmaps[i - 1] = BitmapFactory.decodeFile(file.absolutePath)
                 }
             }
         }

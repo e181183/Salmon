@@ -32,9 +32,5 @@ abstract class GameDatabase : RoomDatabase() {
                 return instance
             }
         }
-
-        fun disconnectDatabase(){
-            INSTANCE = null
-        }
     }
 }

@@ -23,8 +23,8 @@ interface GameDao {
     @Query("SELECT score FROM game WHERE id = 1")
     fun getScore(): Int
 
-    @Query("SELECT lifes FROM game WHERE id = 1")
-    fun getLifes(): Int
+    @Query("SELECT lives FROM game WHERE id = 1")
+    fun getLives(): Int
 
     @Query("SELECT sequence FROM game WHERE id = 1")
     fun getSequence(): String

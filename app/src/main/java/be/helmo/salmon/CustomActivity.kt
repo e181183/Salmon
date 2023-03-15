@@ -36,7 +36,7 @@ class CustomActivity : AppCompatActivity() {
 
     private lateinit var buttonViewmodel : SalmonButtonViewModel
 
-    private lateinit var micro : Micro
+    private lateinit var sound : Sound
 
     private var bitmaps = mutableListOf<Bitmap>()
 
@@ -51,11 +51,6 @@ class CustomActivity : AppCompatActivity() {
                 Manifest.permission.CAMERA
             ).toTypedArray()
 
-        private val REQUIRED_CAM_PERMISSION =
-            mutableListOf(
-                Manifest.permission.CAMERA,
-            ).toTypedArray()
-
         var companionButtonId: Int = 0
     }
 
@@ -68,11 +63,11 @@ class CustomActivity : AppCompatActivity() {
             this, REQUIRED_ALL_PERMISSIONS, REQUEST_CODE_PERMISSIONS
         )
 
-        buttonViewmodel = ViewModelProvider(this).get(SalmonButtonViewModel::class.java)
+        buttonViewmodel = ViewModelProvider(this)[SalmonButtonViewModel::class.java]
 
-        micro = Micro(this, buttonViewmodel)
+        sound = Sound(this, buttonViewmodel)
 
-        bitmaps = mutableListOf<Bitmap>(
+        bitmaps = mutableListOf(
             BitmapFactory.decodeResource(resources, R.drawable.sound_red_button),
             BitmapFactory.decodeResource(resources, R.drawable.sound_green_button),
             BitmapFactory.decodeResource(resources, R.drawable.sound_blue_button),
@@ -95,7 +90,7 @@ class CustomActivity : AppCompatActivity() {
         }
         binding.resetSounds.setOnClickListener {
             Toast.makeText(this, "reset", Toast.LENGTH_SHORT).show()
-            micro.resetAllSounds()
+            sound.resetAllSounds()
         }
         //red(1)
         createOnClickListeners(binding.redCustomButton, binding.imageForRed, binding.soundForRed, 1)
@@ -110,22 +105,22 @@ class CustomActivity : AppCompatActivity() {
     private fun createOnClickListeners(custBut : View, imgForBut : View, sndForBut : View, buttonId: Int) {
 
         custBut.setOnClickListener {
-            micro.playAudio(buttonId)
+            sound.playAudio(buttonId)
         }
         imgForBut.setOnClickListener {
             companionButtonId = buttonId
             takeOrPickPhoto()
         }
         sndForBut.setOnClickListener {
-            if (micro.microPermissionsGranted()) {
-                if (!micro.getIsRecording()) { //enregistre le son
-                    micro.recordAudio(buttonId)
+            if (sound.microPermissionsGranted()) {
+                if (!sound.getIsRecording()) { //enregistre le son
+                    sound.recordAudio(buttonId)
                     sndForBut.backgroundTintList =
                         ColorStateList.valueOf(resources.getColor(R.color.red))
 
                 } else if(sndForBut.backgroundTintList == ColorStateList.valueOf(resources.getColor(R.color.red))) {
                     //coupe l'enregistrement si le bouton de son correspond au bon SalmonButton
-                    micro.stopRecord(buttonId)
+                    sound.stopRecord(buttonId)
                     sndForBut.backgroundTintList =
                         ColorStateList.valueOf(resources.getColor(R.color.salmon_orange))
                 } else {
@@ -171,10 +166,8 @@ class CustomActivity : AppCompatActivity() {
         }
     }
 
-    private fun cameraPermissionsGranted() = REQUIRED_CAM_PERMISSION.all {
-        ContextCompat.checkSelfPermission(
-            baseContext, it
-        ) == PackageManager.PERMISSION_GRANTED
+    private fun cameraPermissionsGranted() : Boolean {
+        return ContextCompat.checkSelfPermission(baseContext, REQUIRED_ALL_PERMISSIONS[1]) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun choseImage() {
@@ -244,9 +237,9 @@ class CustomActivity : AppCompatActivity() {
     private fun getImagesFromDb() {
         for (i in 1..4) {
             if (buttonViewmodel.getImagePath(i) != null){
-                var file = File(buttonViewmodel.getImagePath(i))
+                val file = File(buttonViewmodel.getImagePath(i))
                 if (file.exists()) {
-                    bitmaps.set(i - 1, BitmapFactory.decodeFile(file.absolutePath))
+                    bitmaps[i - 1] = BitmapFactory.decodeFile(file.absolutePath)
                 }
             }
         }
