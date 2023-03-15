@@ -19,8 +19,8 @@ class GameViewModel (application: Application) : AndroidViewModel(application)  
         repository.addSavedGame(game)
     }
 
-    fun DeleteFinishedSavedGame(game : Game) {
-        repository.deleteSavedGame(game)
+    fun DeleteFinishedSavedGame() {
+        repository.deleteSavedGame()
     }
 
     fun getGame(): LiveData<Game> {

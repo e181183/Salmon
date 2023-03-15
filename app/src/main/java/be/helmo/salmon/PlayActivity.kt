@@ -41,6 +41,7 @@ class PlayActivity : AppCompatActivity() {
     private var score = 0;
     private var nbErreurs = 0;
     private var sequence = ""
+    private var isNew : Boolean = true
 
     private lateinit var gameViewModel: GameViewModel
 
@@ -59,7 +60,7 @@ class PlayActivity : AppCompatActivity() {
         binding = ActivityPlayBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val isNew = intent.getBooleanExtra("isNew", true)
+        isNew = intent.getBooleanExtra("isNew", true)
 
         gameViewModel = ViewModelProvider(this).get(GameViewModel::class.java)
         buttonViewmodel = ViewModelProvider(this).get(SalmonButtonViewModel::class.java)
@@ -79,8 +80,9 @@ class PlayActivity : AppCompatActivity() {
                 niveau = gameViewModel.getLevel()
                 score = gameViewModel.getScore()
                 vies = gameViewModel.getLifes()
-                for (i in 0 until sequence.length)
-                inputsToFollow.add(gameViewModel.getSequence().get(i).toString().toInt())
+                for (i in 0 until sequence.length) {
+                    inputsToFollow.add(gameViewModel.getSequence().get(i).toString().toInt())
+                }
             }
             updateVisualElements()
         }
@@ -119,16 +121,17 @@ class PlayActivity : AppCompatActivity() {
             micro.playAudio(4)
         }
 
-        Timer().schedule(1000) {playGame()}
+        Timer().schedule(1000) {playGame(isNew)}
     }
 
-    private fun playGame() {
-        var input = pickAnInput()
-        inputsToFollow.add(input)
-        sequence += input.toString()
+    private fun playGame(addSequence : Boolean) {
+        if (addSequence) {
+            var input = pickAnInput()
+            inputsToFollow.add(input)
+            sequence += input.toString()
+        }
         disableEnableClick()
         displayInput(inputsToFollow, 0)
-
     }
 
     private fun displayInput(inputList: List<Int>, index: Int) {
@@ -186,7 +189,7 @@ class PlayActivity : AppCompatActivity() {
                 updateScore();
                 niveau++;
                 nbInput =0;
-                playGame();
+                playGame(true);
             }
 
         } else {
@@ -197,6 +200,9 @@ class PlayActivity : AppCompatActivity() {
                 disableEnableClick()
                 displayInput(inputsToFollow, 0);
             } else {
+                GlobalScope.launch(Dispatchers.IO){
+                    gameViewModel.DeleteFinishedSavedGame()
+                }
                 val intent = Intent(this, GameoverActivity::class.java)
                 intent.putExtra("SCORE", score)
                 intent.putExtra("NIVEAU", niveau)

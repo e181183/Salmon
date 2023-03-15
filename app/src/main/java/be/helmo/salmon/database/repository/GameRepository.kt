@@ -12,8 +12,8 @@ class GameRepository(private val gameDao: GameDao) {
         gameDao.addSavedGame(game)
     }
 
-    fun deleteSavedGame(game : Game){
-        gameDao.deleteSavedGame(game)
+    fun deleteSavedGame() {
+        gameDao.deleteSavedGame()
     }
 
     fun getGame() : LiveData<Game> {
