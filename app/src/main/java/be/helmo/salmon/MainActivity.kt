@@ -6,12 +6,13 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import be.helmo.salmon.databinding.ActivityMainBinding
 import be.helmo.salmon.viewModel.GameViewModel
 import be.helmo.salmon.viewModel.SalmonButtonViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -24,26 +25,22 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var highScoreText: TextView
-
-    private lateinit var micro : Micro
+    private lateinit var sound : Sound
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        highScoreText = findViewById(R.id.highScoreMenu)
+        buttonViewmodel = ViewModelProvider(this)[SalmonButtonViewModel::class.java]
+        gameViewModel = ViewModelProvider(this)[GameViewModel::class.java]
 
-        buttonViewmodel = ViewModelProvider(this).get(SalmonButtonViewModel::class.java)
-        gameViewModel = ViewModelProvider(this).get(GameViewModel::class.java)
-
-        micro = Micro(this, buttonViewmodel)
+        sound = Sound(this, buttonViewmodel)
 
         val sharedPreferences = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
         var highScore = sharedPreferences.getInt("high_score_key", 0)
 
-        highScoreText.text = getString(R.string.highscore) + highScore.toString()
+        binding.highScoreMenu.text = getString(R.string.highscore) + highScore.toString()
 
         GlobalScope.launch {
             if(gameViewModel.getCountGame() != 0) {
@@ -53,24 +50,44 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.muteButton.isChecked = micro.getIsMute()
+        binding.muteButton.isChecked = sound.getIsMute()
         binding.muteButton.setOnClickListener{
             if(binding.muteButton.isChecked){
-                micro.setIsMute(true)
+                sound.setIsMute(true)
             }else{
-                micro.setIsMute(false)
+                sound.setIsMute(false)
             }
         }
 
         binding.playGameButton.setOnClickListener {
-            Toast.makeText(this, R.string.play_game, Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, PlayActivity::class.java)
-            intent.putExtra("isNew", true)
-            startActivity(intent)
+            if(isLoadGameActive) {
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("Play a new game and delete the saved game ?")
+                builder.setItems(arrayOf("yes", "no")) { _, which ->
+                    when (which) {
+                        0 -> {
+                            // supprime la partie sauvegardée et en commence une nouvelle
+                            GlobalScope.launch(Dispatchers.IO){
+                                gameViewModel.deleteFinishedSavedGame()
+                            }
+                            val intent = Intent(this, PlayActivity::class.java)
+                            intent.putExtra("isNew", true)
+                            startActivity(intent)
+                        }
+                        1 -> {
+                            // Annuler
+                        }
+                    }
+                }
+                builder.show()
+            }else {
+                val intent = Intent(this, PlayActivity::class.java)
+                intent.putExtra("isNew", true)
+                startActivity(intent)
+            }
         }
         binding.loadGameButton.setOnClickListener {
             if (isLoadGameActive) {
-                Toast.makeText(this, R.string.load_game, Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, PlayActivity::class.java)
                 intent.putExtra("isNew", false)
                 startActivity(intent)

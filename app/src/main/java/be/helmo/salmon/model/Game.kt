@@ -8,8 +8,46 @@ import androidx.room.PrimaryKey
 data class Game(
     @PrimaryKey
     val id : Int,
-    @ColumnInfo(name = "level") val level: Int,
-    @ColumnInfo(name = "score") val score: Int,
-    @ColumnInfo(name = "lifes") val lifes: Int,
-    @ColumnInfo(name = "sequence") val sequence: String
-)
+    @ColumnInfo(name = "level") var level: Int,
+    @ColumnInfo(name = "score") var score: Int,
+    @ColumnInfo(name = "lives") var lives: Int,
+    @ColumnInfo(name = "sequence") var sequence: String) {
+
+    constructor(level: Int, score: Int, lives: Int) : this(0, level, score, lives, "")
+
+   fun getNiveau() : Int {
+        return this.level
+    }
+
+    fun getSc() : Int {
+        return this.score
+    }
+
+    fun getVies() : Int {
+        return this.lives
+    }
+
+    fun getSeq() : String {
+        return  this.sequence
+    }
+
+    fun setSeq(seq: String) {
+        this.sequence = seq
+    }
+
+    fun upgradeLevel() {
+        this.level += 1;
+    }
+
+    fun downgradeLives() {
+        this.lives--
+    }
+
+    fun upgradeScore(sup : Int) {
+        this.score += sup
+    }
+}
+
+
+
+

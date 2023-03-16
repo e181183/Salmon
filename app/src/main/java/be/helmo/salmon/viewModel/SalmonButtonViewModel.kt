@@ -19,7 +19,7 @@ class SalmonButtonViewModel(application: Application) : AndroidViewModel(applica
         repository = SalmonButtonRepository(salmonButtonDao)
     }
 
-    fun addButtonToDb(salmonButton : SalmonButton) {
+    private fun addButtonToDb(salmonButton : SalmonButton) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.addButton(salmonButton)
         }
@@ -43,18 +43,14 @@ class SalmonButtonViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun getImagePath(id : Int) : String? {
-        if (repository.getImagePath(id) != null) {
-            return repository.getImagePath(id)
+        return if (repository.getImagePath(id) != null) {
+            repository.getImagePath(id)
         } else {
-            return null
+            null
         }
     }
     fun getSoundPath(id : Int) : String? {
         return repository.getSoundPath(id)
-    }
-
-    fun getCountButton() : Int {
-        return repository.getCountButton()
     }
 
     fun setButtonImage(id: Int, img: String) {

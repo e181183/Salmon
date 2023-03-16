@@ -15,14 +15,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 
-class Micro(private val context: Context, private val buttonViewmodel : SalmonButtonViewModel) {
+class Sound(private val context: Context, private val buttonViewmodel : SalmonButtonViewModel) {
 
     companion object {
-        private val REQUIRED_MIC_PERMISSION =
-            mutableListOf(
-                Manifest.permission.RECORD_AUDIO
-            ).toTypedArray()
-
         private var isMute: Boolean = false
     }
 
@@ -121,9 +116,8 @@ class Micro(private val context: Context, private val buttonViewmodel : SalmonBu
         return file.path
     }
 
-    fun microPermissionsGranted() = REQUIRED_MIC_PERMISSION.all {
-        ContextCompat.checkSelfPermission(
-            context, it
-        ) == PackageManager.PERMISSION_GRANTED
+    fun microPermissionsGranted() : Boolean {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
     }
+
 }

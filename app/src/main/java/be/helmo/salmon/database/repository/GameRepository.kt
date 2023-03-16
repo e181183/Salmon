@@ -1,9 +1,6 @@
 package be.helmo.salmon.database.repository
 
-import androidx.lifecycle.LiveData
-import androidx.room.Query
 import be.helmo.salmon.model.Game
-import be.helmo.salmon.database.GameDatabase
 import be.helmo.salmon.database.dao.GameDao
 
 class GameRepository(private val gameDao: GameDao) {
@@ -12,12 +9,8 @@ class GameRepository(private val gameDao: GameDao) {
         gameDao.addSavedGame(game)
     }
 
-    fun deleteSavedGame(game : Game){
-        gameDao.deleteSavedGame(game)
-    }
-
-    fun getGame() : LiveData<Game> {
-        return gameDao.getGame()
+    fun deleteSavedGame() {
+        gameDao.deleteSavedGame()
     }
 
     fun getLevel(): Int {
@@ -28,8 +21,8 @@ class GameRepository(private val gameDao: GameDao) {
         return gameDao.getScore()
     }
 
-    fun getLifes(): Int {
-        return gameDao.getLifes()
+    fun getLives(): Int {
+        return gameDao.getLives()
     }
 
     fun getSequence(): String {
