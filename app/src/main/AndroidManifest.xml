@@ -28,8 +28,7 @@
         <activity
             android:name=".PlayActivity"
             android:screenOrientation="portrait"
-            android:exported="false"
-            android:parentActivityName=".MainActivity" />
+            android:exported="false" />
         <activity
             android:name=".CustomActivity"
             android:screenOrientation="portrait"
