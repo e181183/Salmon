@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import be.helmo.salmon.databinding.ActivityMainBinding
 import be.helmo.salmon.viewModel.GameViewModel
 import be.helmo.salmon.viewModel.SalmonButtonViewModel
@@ -42,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.highScoreMenu.text = getString(R.string.highscore) + highScore.toString()
 
-        GlobalScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             if(gameViewModel.getCountGame() != 0) {
                 isLoadGameActive = true
                 binding.loadGameButton.backgroundTintList=

@@ -1,11 +1,7 @@
 package be.helmo.salmon.model
 
-import android.app.Application
-import androidx.appcompat.app.AppCompatActivity
-import be.helmo.salmon.model.Game
 import org.junit.Test
 import org.junit.Assert.*
-import org.mockito.Mockito
 
 internal class GameTest {
 
@@ -47,10 +43,7 @@ internal class GameTest {
         assertEquals(gameLevel1.getSeq(), "2")
         assertEquals(gameLevel5.getSeq(), "21132")
         assertEquals(gameLevel7.getSeq(), "2113241")
-
-
     }
-
 
     @Test
     fun upgradeLevel() {
@@ -105,7 +98,6 @@ internal class GameTest {
 
         gameLevel7.upgradeScore(30)
         assertEquals(gameLevel7.getSc(), 400)
-
-
     }
+
 }

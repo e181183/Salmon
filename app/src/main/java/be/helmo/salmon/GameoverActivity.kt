@@ -16,7 +16,6 @@ class GameoverActivity : AppCompatActivity() {
 
     private lateinit var highScoreText: TextView
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gameover)
@@ -24,7 +23,7 @@ class GameoverActivity : AppCompatActivity() {
         backToMenuButton = findViewById(R.id.GameOverButton)
         finalScoreText = findViewById(R.id.finalScore)
         finalLevelText = findViewById(R.id.finalLEvel)
-        highScoreText = findViewById(R.id.highScore)
+        highScoreText = findViewById(R.id.highscore)
 
         finalScoreText.text = getString(R.string.actual_score) + intent.getIntExtra("SCORE", 0).toString()
         finalLevelText.text = getString(R.string.niveau) + intent.getIntExtra("NIVEAU", 0).toString()

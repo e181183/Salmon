@@ -5,11 +5,12 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
-
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import be.helmo.salmon.databinding.ActivityPlayBinding
 import be.helmo.salmon.model.Game
 import be.helmo.salmon.viewModel.GameViewModel
@@ -18,7 +19,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -64,9 +64,7 @@ class PlayActivity : AppCompatActivity() {
             BitmapFactory.decodeResource(resources, R.drawable.bouton_base_jaune)
         )
 
-
-
-        GlobalScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             if(gameViewModel.getCountGame() != 0 && !isNew) {
                 initValues()
             } else {
@@ -74,57 +72,36 @@ class PlayActivity : AppCompatActivity() {
             }
             updateVisualElements()
 
-            getImagesFromDb()
-
+            buttonViewmodel.getImagesFromDb(bitmaps)
             withContext(Dispatchers.Main) {
                 initButtons()
             }
         }
 
-        binding.backToMenu.setOnClickListener() {
+        binding.saveAndQuit.setOnClickListener() {
             saveGame(game.getNiveau(),game.getSc(),game.getVies(),game.getSeq())
         }
 
-        binding.redButton.setOnClickListener() {
-            runOnUiThread { getDisplayResource(0) }
-            verifyInput(0)
+        buttonClickListener(binding.redButton, 0)
 
-            sound.playAudio(1)
+        buttonClickListener(binding.greenButton, 1)
 
-            Timer().schedule(400) {
-                runOnUiThread { getBaseButtonResource(0)}
-            }
-        }
+        buttonClickListener(binding.blueButton, 2)
 
-        binding.greenButton.setOnClickListener() {
-            runOnUiThread { getDisplayResource(1) }
-            verifyInput(1)
-            sound.playAudio(2)
-            Timer().schedule(400) {
-                runOnUiThread { getBaseButtonResource(1)}
-            }
-        }
-
-        binding.blueButton.setOnClickListener() {
-            runOnUiThread { getDisplayResource(2) }
-            verifyInput(2)
-            sound.playAudio(3)
-            Timer().schedule(400) {
-                runOnUiThread { getBaseButtonResource(2)}
-            }
-        }
-
-        binding.yellowButton.setOnClickListener() {
-            runOnUiThread { getDisplayResource(3) }
-            verifyInput(3)
-            sound.playAudio(4)
-            Timer().schedule(400) {
-                runOnUiThread { getBaseButtonResource(3)}
-            }
-
-        }
+        buttonClickListener(binding.yellowButton, 3)
 
         Timer().schedule(1000) {playGame(isNew)}
+    }
+
+    private fun buttonClickListener(button : View, input: Int) {
+        button.setOnClickListener() {
+            runOnUiThread { getDisplayResource(input) }
+            verifyInput(input)
+            sound.playAudio(input + 1)
+            Timer().schedule(400) {
+                runOnUiThread { getBaseButtonResource(input)}
+            }
+        }
     }
 
     private fun playGame(addSequence : Boolean) {
@@ -166,7 +143,6 @@ class PlayActivity : AppCompatActivity() {
         }
     }
 
-
     private fun getDisplayResource(input: Int) = when(input) {
         0 -> binding.redButton.foreground = getDrawable(R.drawable.salmon_rouge)
         1 -> binding.greenButton.foreground = getDrawable(R.drawable.salmon_vert)
@@ -188,9 +164,9 @@ class PlayActivity : AppCompatActivity() {
             nbInput++
             if(nbInput == inputsToFollow.size) {
                 Toast.makeText(this, R.string.correct, Toast.LENGTH_SHORT).show()
-                updateScore();
+                updateScore()
                 game.upgradeLevel()
-                nbInput =0;
+                nbInput =0
                 Timer().schedule(1500){playGame(true);}
             }
 
@@ -199,8 +175,8 @@ class PlayActivity : AppCompatActivity() {
             if(game.getVies() > 0) {
                 Toast.makeText(this, R.string.Incorrect, Toast.LENGTH_SHORT).show()
                 nbErreurs++
+                nbInput =0
                 disableEnableClick()
-
                 Timer().schedule(1500){ displayInput(inputsToFollow, 0);}
 
             } else {
@@ -213,9 +189,7 @@ class PlayActivity : AppCompatActivity() {
 
                 startActivity(intent)
             }
-
         }
-
         updateVisualElements()
     }
 
@@ -232,7 +206,7 @@ class PlayActivity : AppCompatActivity() {
         binding.niveauActuel.text = getString(R.string.niveau) + game.getNiveau().toString()
         binding.nbVies.text = getString(R.string.vies) + game.getVies().toString()
         binding.actualScore.text = getString(R.string.actual_score) + game.getSc().toString()
-        binding.highScore.text =  getString(R.string.highscore) + highScore.toString()
+        binding.highscore.text =  getString(R.string.highscore) + highScore.toString()
     }
 
     private fun updateScore() {
@@ -272,23 +246,12 @@ class PlayActivity : AppCompatActivity() {
         builder.show()
     }
 
-    private fun getImagesFromDb() {
-        for (i in 1..4) {
-            if (buttonViewmodel.getImagePath(i) != null){
-                var file = File(buttonViewmodel.getImagePath(i))
-                if (file.exists()) {
-                    bitmaps[i - 1] = BitmapFactory.decodeFile(file.absolutePath)
-                }
-            }
-        }
-    }
-
     private fun initValues() {
         var seq = gameViewModel.getSequence()
         game = Game(gameViewModel.getLevel(), gameViewModel.getScore(), gameViewModel.getLives())
         game.setSeq(seq)
 
-        for (i in 0 until game.getSeq().length) {
+        for (i in 0 until seq.length) {
             inputsToFollow.add(gameViewModel.getSequence()[i].toString().toInt())
         }
     }

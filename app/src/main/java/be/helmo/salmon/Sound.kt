@@ -42,25 +42,32 @@ class Sound(private val context: Context?, private val buttonViewmodel : SalmonB
     }
 
     fun playAudio(buttonId : Int) {
-        if (!isMute) {
-            GlobalScope.launch(Dispatchers.IO) {
-                if (buttonViewmodel.getSoundPath(buttonId) != null) {
-                    try {
-                        mediaPlayer = MediaPlayer()
-                        mediaPlayer!!.setDataSource(buttonViewmodel.getSoundPath(buttonId))
-                        mediaPlayer!!.prepare()
-                        mediaPlayer!!.start()
-                    } catch (exc: Exception) {
-                        Toast.makeText(context, "fail play", Toast.LENGTH_SHORT).show()
+        if (isMute) return
+
+        GlobalScope.launch(Dispatchers.IO) {
+            if (buttonViewmodel.getSoundPath(buttonId) != null) {
+                try {
+                    mediaPlayer = MediaPlayer()
+                    mediaPlayer.setDataSource(buttonViewmodel.getSoundPath(buttonId))
+                    mediaPlayer.prepare()
+                    mediaPlayer.start()
+                    mediaPlayer.setOnCompletionListener {
+                        mediaPlayer.release()
                     }
-                } else {
-                    when (buttonId) {
-                        1 ->  defaultMp = MediaPlayer.create(context, R.raw.son_defaut_rouge)
-                        2 ->  defaultMp = MediaPlayer.create(context, R.raw.son_defaut_vert)
-                        3 ->  defaultMp = MediaPlayer.create(context, R.raw.son_defaut_bleu)
-                        else ->  defaultMp = MediaPlayer.create(context, R.raw.son_defaut_jaune)
-                    }
-                    defaultMp.start()
+                } catch (exc: Exception) {
+                    Toast.makeText(context, "fail play", Toast.LENGTH_SHORT).show()
+                    mediaPlayer.release()
+                }
+            } else {
+                defaultMp = when (buttonId) {
+                    1 -> MediaPlayer.create(context, R.raw.son_defaut_rouge)
+                    2 -> MediaPlayer.create(context, R.raw.son_defaut_vert)
+                    3 -> MediaPlayer.create(context, R.raw.son_defaut_bleu)
+                    else -> MediaPlayer.create(context, R.raw.son_defaut_jaune)
+                }
+                defaultMp.start()
+                defaultMp.setOnCompletionListener {
+                    defaultMp.release()
                 }
             }
         }

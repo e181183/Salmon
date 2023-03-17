@@ -45,11 +45,9 @@
             android:name=".GameoverActivity"
             android:screenOrientation="portrait"
             android:exported="true"/>
-
         <activity
             android:name=".PlayActivity"
             android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity"
             android:exported="true"
             tools:node="merge"/>
         <activity
@@ -57,7 +55,6 @@
             android:screenOrientation="portrait"
             android:exported="true"
             android:parentActivityName=".MainActivity" />
-
         <activity
             android:name=".CustomActivity"
             android:screenOrientation="portrait"

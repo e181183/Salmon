@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import be.helmo.salmon.databinding.ActivityCustomBinding
 import be.helmo.salmon.viewModel.SalmonButtonViewModel
 import kotlinx.coroutines.Dispatchers
@@ -74,8 +75,8 @@ class CustomActivity : AppCompatActivity() {
             BitmapFactory.decodeResource(resources, R.drawable.sound_yellow_button)
         )
 
-        GlobalScope.launch(Dispatchers.IO) {
-            getImagesFromDb()
+        lifecycleScope.launch(Dispatchers.IO) {
+            buttonViewmodel.getImagesFromDb(bitmaps)
             withContext(Dispatchers.Main) {
                 binding.redCustomButton.setImageBitmap(bitmaps[0])
                 binding.greenCustomButton.setImageBitmap(bitmaps[1])
@@ -232,17 +233,6 @@ class CustomActivity : AppCompatActivity() {
         stream.close()
 
         return file.absolutePath
-    }
-
-    private fun getImagesFromDb() {
-        for (i in 1..4) {
-            if (buttonViewmodel.getImagePath(i) != null){
-                val file = File(buttonViewmodel.getImagePath(i))
-                if (file.exists()) {
-                    bitmaps[i - 1] = BitmapFactory.decodeFile(file.absolutePath)
-                }
-            }
-        }
     }
 
 }

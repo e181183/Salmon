@@ -11,11 +11,12 @@ data class Game(
     @ColumnInfo(name = "level") var level: Int,
     @ColumnInfo(name = "score") var score: Int,
     @ColumnInfo(name = "lives") var lives: Int,
-    @ColumnInfo(name = "sequence") var sequence: String) {
+    @ColumnInfo(name = "sequence") var sequence: String = "") {
 
-    constructor(level: Int, score: Int, lives: Int) : this(0, level, score, lives, "")
+    constructor(level: Int, score: Int, lives: Int) : this(1, level, score, lives, "")
+    constructor(level: Int, score: Int, lives: Int, sequence: String) : this(1, level, score, lives, sequence)
 
-   fun getNiveau() : Int {
+    fun getNiveau() : Int {
         return this.level
     }
 

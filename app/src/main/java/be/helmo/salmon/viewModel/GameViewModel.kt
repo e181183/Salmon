@@ -1,16 +1,14 @@
 package be.helmo.salmon.viewModel
 
 import android.app.Application
-import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
 import be.helmo.salmon.database.GameDatabase
 import be.helmo.salmon.model.Game
 import be.helmo.salmon.database.repository.GameRepository
 
- class GameViewModel(application: Application) : AndroidViewModel(application)  {
+class GameViewModel(application: Application) : AndroidViewModel(application)  {
 
-     val repository : GameRepository
+     private val repository : GameRepository
 
     init {
         val gameDao = GameDatabase.getDatabase(application).GameDao()
@@ -44,13 +42,12 @@ import be.helmo.salmon.database.repository.GameRepository
         return repository.getCountGame()
     }
 
-     fun updateScore(niveau: Int, nbErreurs: Int): Int {
+    fun updateScore(niveau: Int, nbErreurs: Int): Int {
         return ((6 * niveau) - (nbErreurs * 3))
-     }
+    }
 
-      fun pickAnInput() : Int {
-         return (0..3).random()
-     }
+    fun pickAnInput() : Int {
+        return (0..3).random()
+    }
 
-
- }
+}

@@ -1,13 +1,17 @@
 package be.helmo.salmon.viewModel
 
 import android.app.Application
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import be.helmo.salmon.database.SalmonButtonDatabase
 import be.helmo.salmon.model.SalmonButton
 import be.helmo.salmon.database.repository.SalmonButtonRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.File
 
 
 class SalmonButtonViewModel(application: Application) : AndroidViewModel(application) {
@@ -20,7 +24,7 @@ class SalmonButtonViewModel(application: Application) : AndroidViewModel(applica
     }
 
     private fun addButtonToDb(salmonButton : SalmonButton) {
-        viewModelScope.launch(Dispatchers.IO) {
+        GlobalScope.launch(Dispatchers.IO) {
             repository.addButton(salmonButton)
         }
     }
@@ -59,6 +63,17 @@ class SalmonButtonViewModel(application: Application) : AndroidViewModel(applica
 
     fun setSoundPath(id: Int, snd: String) {
         repository.setSoundPath(id, snd)
+    }
+
+    fun getImagesFromDb(bitmaps : MutableList<Bitmap>) {
+        for (i in 1..4) {
+            if (getImagePath(i) != null){
+                val file = File(getImagePath(i))
+                if (file.exists()) {
+                    bitmaps[i - 1] = BitmapFactory.decodeFile(file.absolutePath)
+                }
+            }
+        }
     }
 
 }

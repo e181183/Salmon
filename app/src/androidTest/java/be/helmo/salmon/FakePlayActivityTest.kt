@@ -5,18 +5,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.IdlingPolicies
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.Timer
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.schedule
 
 @LargeTest
@@ -30,8 +27,6 @@ class FakePlayActivityTest {
         scenario = launchActivity()
         scenario.moveToState(Lifecycle.State.RESUMED)
     }
-
-
 
     @Test
     fun enterTheCorrectSequence() {
@@ -48,7 +43,6 @@ class FakePlayActivityTest {
             var score = 3650
             onView(withText(score.toString())).check(matches(isDisplayed()))
         }
-
     }
 
     @Test
@@ -67,10 +61,8 @@ class FakePlayActivityTest {
             onView(withText(niveau.toString())).check(matches(isDisplayed()))
             onView(withText(vies.toString())).check(matches(isDisplayed()))
         }
-
     }
 
-
-    }
+}
 
 
